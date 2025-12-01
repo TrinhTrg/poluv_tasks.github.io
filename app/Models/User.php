@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // --- THÊM ĐOẠN NÀY: Khai báo mối quan hệ ---
+    // Một User có nhiều Tasks
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
