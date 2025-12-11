@@ -1,0 +1,47 @@
+.theme-light {
+  /* --- PRIMARY: Sage Green (#6FA774) --- */
+  --color-primary-50: #f0f7f1;
+  --color-primary-100: #dceidd;
+  --color-primary-200: #bbdec0;
+  --color-primary-300: #8ec696;
+  --color-primary-400: #6fa774; /* Main Color */
+  --color-primary-500: #4d8b55;
+  --color-primary-600: #3a7041;
+  --color-primary-700: #305936;
+  --color-primary-800: #28472d;
+  --color-primary-900: #213b26;
+  --color-primary-950: #112014;
+
+  /* Text trên nền Primary */
+  --color-on-primary: #ffffff;
+  --color-on-primary-50: #0f172a; /* Text đậm trên nền nhạt */
+  --color-on-primary-500: #ffffff; /* Text trắng trên nền chính */
+
+  /* --- SURFACE: Cream & Beige (#F5E6D3) --- */
+  --color-surface: #ffffff;
+  --color-surface-50: #fdfbf9;
+  --color-surface-100: #faf7f2; /* Background Main cũ */
+  --color-surface-200: #f5e6d3; /* Card Color cũ */
+  --color-surface-300: #eed6b5;
+  --color-surface-400: #e0bea4;
+  --color-surface-500: #c8afa9;
+  --color-surface-600: #a88d85;
+  --color-surface-700: #8a706a;
+  --color-surface-800: #6d5854;
+  --color-surface-900: #594a46;
+  --color-surface-950: #302624;
+
+  /* Text trên nền Surface (Màu chữ xám đậm) */
+  --color-on-surface: #1f2937;
+  --color-on-surface-50: #1f2937;
+  --color-on-surface-100: #1f2937;
+  --color-on-surface-200: #1f2937;
+  --color-on-surface-300: #1f2937;
+  --color-on-surface-400: #1f2937;
+  --color-on-surface-500: #ffffff; /* Text trên nền surface đậm */
+  --color-on-surface-600: #ffffff;
+
+  /* --- BACKGROUND: Main App Background --- */
+  --color-background: #FAF7F2; 
+  --color-on-background: #111827;
+}

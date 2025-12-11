@@ -1,0 +1,45 @@
+.theme-dark {
+  /* --- PRIMARY: Indigo (#6366f1) --- */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1; /* Main Color */
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+
+  /* Text trên nền Primary */
+  --color-on-primary: #ffffff;
+  --color-on-primary-50: #1e1b4b;
+  --color-on-primary-500: #ffffff;
+
+  /* --- SURFACE: Slate Gray (#1e293b) --- */
+  --color-surface: #020617;
+  --color-surface-50: #0f172a;
+  --color-surface-100: #1e293b; /* Card Color cũ */
+  --color-surface-200: #334155;
+  --color-surface-300: #475569;
+  --color-surface-400: #64748b;
+  --color-surface-500: #94a3b8;
+  --color-surface-600: #cbd5e1;
+  --color-surface-700: #e2e8f0;
+  --color-surface-800: #f1f5f9;
+  --color-surface-900: #f8fafc;
+  --color-surface-950: #ffffff;
+
+  /* Text trên nền Surface (Màu chữ trắng/sáng) */
+  --color-on-surface: #f3f4f6;
+  --color-on-surface-50: #f3f4f6;
+  --color-on-surface-100: #f3f4f6;
+  --color-on-surface-200: #f3f4f6;
+  --color-on-surface-300: #1f2937;
+  --color-on-surface-400: #1f2937;
+
+  /* --- BACKGROUND --- */
+  --color-background: #0f172a;
+  --color-on-background: #ffffff;
+}
