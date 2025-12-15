@@ -19,12 +19,14 @@ class Task extends Model
         'color',       // Mới
         'priority',
         'has_notify',
+        'is_notified',
         'is_completed'
     ];
 
     protected $casts = [
         'is_completed' => 'boolean',
         'has_notify'   => 'boolean',
+        'is_notified'  => 'boolean',
         'start_at'     => 'datetime', // Tự động chuyển về dạng ngày giờ thông minh
         'due_at'       => 'datetime',
         'priority'     => 'integer',

@@ -48,7 +48,63 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'start_time' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'due_time' => 'nullable|string',
+            'color' => 'nullable|string|max:7',
+            'priority' => 'nullable|string|in:low,medium,high',
+            'notify' => 'nullable|boolean',
+        ]);
+
+        // Tìm category_id từ category name
+        $categoryId = null;
+        if ($validated['category'] ?? null) {
+            $category = \App\Models\Category::where('name', $validated['category'])
+                ->where('user_id', 1)
+                ->first();
+            if ($category) {
+                $categoryId = $category->id;
+            }
+        }
+
+        // Combine date + time thành datetime
+        $startAt = null;
+        if ($validated['start_date'] ?? null) {
+            $startDate = $validated['start_date'];
+            $startTime = $validated['start_time'] ?? '00:00';
+            $startAt = $startDate . ' ' . $startTime . ':00';
+        }
+
+        $dueAt = null;
+        if ($validated['due_date'] ?? null) {
+            $dueDate = $validated['due_date'];
+            $dueTime = $validated['due_time'] ?? '23:59';
+            $dueAt = $dueDate . ' ' . $dueTime . ':00';
+        }
+
+        // Convert priority string to integer
+        $priorityMap = ['low' => 1, 'medium' => 2, 'high' => 3];
+        $priority = $priorityMap[$validated['priority'] ?? 'medium'] ?? 2;
+
+        $task = Task::create([
+            'user_id' => 1, // Tạm thời gán cứng
+            'category_id' => $categoryId,
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'start_at' => $startAt,
+            'due_at' => $dueAt,
+            'color' => $validated['color'] ?? null,
+            'priority' => $priority,
+            'has_notify' => $validated['notify'] ?? false,
+            'is_completed' => false,
+        ]);
+
+        return response()->json($task->load('category'), 201);
     }
 
     /**
@@ -56,7 +112,10 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
+        if ($task->user_id !== 1) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        return response()->json($task->load('category'));
     }
 
     /**
@@ -64,7 +123,57 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        if ($task->user_id !== 1) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'start_time' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'due_time' => 'nullable|string',
+            'color' => 'nullable|string|max:7',
+            'priority' => 'nullable|string|in:low,medium,high',
+            'notify' => 'nullable|boolean',
+        ]);
+
+        // Tìm category_id từ category name
+        if (isset($validated['category'])) {
+            $category = \App\Models\Category::where('name', $validated['category'])
+                ->where('user_id', 1)
+                ->first();
+            $task->category_id = $category ? $category->id : null;
+        }
+
+        // Combine date + time thành datetime
+        if (isset($validated['start_date'])) {
+            $startDate = $validated['start_date'];
+            $startTime = $validated['start_time'] ?? '00:00';
+            $task->start_at = $startDate . ' ' . $startTime . ':00';
+        }
+
+        if (isset($validated['due_date'])) {
+            $dueDate = $validated['due_date'];
+            $dueTime = $validated['due_time'] ?? '23:59';
+            $task->due_at = $dueDate . ' ' . $dueTime . ':00';
+        }
+
+        // Update các field khác
+        if (isset($validated['title'])) $task->title = $validated['title'];
+        if (isset($validated['description'])) $task->description = $validated['description'];
+        if (isset($validated['color'])) $task->color = $validated['color'];
+        if (isset($validated['priority'])) {
+            $priorityMap = ['low' => 1, 'medium' => 2, 'high' => 3];
+            $task->priority = $priorityMap[$validated['priority']] ?? 2;
+        }
+        if (isset($validated['notify'])) $task->has_notify = $validated['notify'];
+
+        $task->save();
+
+        return response()->json($task->load('category'));
     }
 
     /**
@@ -72,6 +181,27 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        if ($task->user_id !== 1) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $task->delete();
+
+        return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    /**
+     * Toggle task completion status.
+     */
+    public function toggle(Task $task)
+    {
+        if ($task->user_id !== 1) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $task->is_completed = !$task->is_completed;
+        $task->save();
+
+        return response()->json($task->load('category'));
     }
 }

@@ -69,7 +69,7 @@
 </head>
 <body style="background-color: var(--color-background); color: var(--color-on-background);" class="antialiased font-sans min-h-screen flex flex-col transition-colors duration-300 relative">
     
-    {{ $slot }}
+    @yield('content')
 
     @livewireScripts
     <script>window.theme = '{{ $currentTheme }}'</script>
