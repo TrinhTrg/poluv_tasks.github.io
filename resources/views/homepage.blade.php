@@ -1,77 +1,57 @@
-<x-user-layout>
+@extends('layouts.user-layout')
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-4">
-        <h1 class="text-3xl md:text-4xl font-serif text-gray-900 dark:text-white leading-tight">
+@section('main-content')
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mt-4 sm:mt-6 md:mt-8 mb-4">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-serif text-gray-900 dark:text-white leading-tight">
             Hello, <span class="underline decoration-pink-300 decoration-2 underline-offset-4">{{ Auth::check() ? Auth::user()->name : 'Friend' }}</span>,
-            <span class="text-gray-500 dark:text-gray-400 font-sans font-light block sm:inline mt-2 sm:mt-0 sm:ml-2 text-2xl">Ready to focus?</span>
+            <span class="text-gray-500 dark:text-gray-400 font-sans font-light block sm:inline mt-1 sm:mt-0 sm:ml-2 text-xl sm:text-2xl">Ready to focus?</span>
         </h1>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 relative overflow-visible px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        <aside class="lg:col-span-3 space-y-6">
-            <x-calendar-sidebar />
+        <aside class="lg:col-span-3 space-y-4 sm:space-y-6">
+            <x-partials.sidebar :tasks="$tasks" :todayTasks="$todayTasks"/>
             
-            <x-stats-today-sidebar />
         </aside>
 
-        <section class="lg:col-span-9 space-y-8">
+        <section class="lg:col-span-9 space-y-4 sm:space-y-6 md:space-y-8 relative overflow-visible">
             
-            <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-white/60 dark:border-slate-700/60">
-                <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                    <button id="btnToggleView" class="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-200 transition" onclick="toggleViewMode()">
-                        <svg id="iconList" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                        <svg id="iconChart" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
-                        <span>View</span>
+            <div class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-3 sm:p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 border border-white/60 dark:border-slate-700/60 relative z-10 overflow-visible">
+                <div class="flex flex-wrap gap-2 overflow-visible relative">
+                    <button id="btnToggleView" class="flex items-center gap-1.5 sm:gap-2 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-indigo-200 transition" onclick="toggleViewMode()">
+                        <svg id="iconList" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg id="iconChart" class="w-4 h-4 sm:w-5 sm:h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+                        <span class="xs:inline">View</span>
                     </button>
                     
-                    <div class="relative group">
-                        <select id="filterStatus" class="appearance-none bg-[#EAD6C0] dark:bg-slate-700 hover:bg-[#E0CCB7] text-gray-800 dark:text-white py-2 pl-4 pr-8 rounded-xl text-sm font-medium focus:outline-none cursor-pointer transition border-none">
-                            <option value="all">All Status</option>
-                            <option value="completed">Completed</option>
-                            <option value="pending">Pending</option>
-                        </select>
-                    </div>
-
-                    <div class="relative group">
-                        <select id="filterCategory" class="appearance-none bg-[#EAD6C0] dark:bg-slate-700 hover:bg-[#E0CCB7] text-gray-800 dark:text-white py-2 pl-4 pr-8 rounded-xl text-sm font-medium focus:outline-none cursor-pointer transition border-none">
-                            <option value="all">All Categories</option>
-                            <option value="Work">Work</option>
-                            <option value="Homework">Homework</option>
-                            <option value="Meeting">Meeting</option>
-                            <option value="Personal">Personal</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>  
-
-                    <div class="relative group">
-                        <select id="sortSelect" class="appearance-none bg-[#EAD6C0] dark:bg-slate-700 hover:bg-[#E0CCB7] text-gray-800 dark:text-white py-2 pl-4 pr-8 rounded-xl text-sm font-medium focus:outline-none cursor-pointer transition border-none">
-                            <option value="created_desc">Newest</option>
-                            <option value="priority_desc">Priority</option>
-                        </select>
-                    </div>
+                    <livewire:status-dropdown />
+                    
+                    <livewire:category-dropdown />
+                    
+                    <livewire:priority-dropdown />
                 </div>
 
-                <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="flex items-center gap-2 sm:gap-3 w-full md:w-auto">
                     <div class="relative w-full md:w-64 group">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                             <svg class="h-4 w-4 text-gray-400 group-focus-within:text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </span>
-                        <input id="searchInput" type="search" placeholder="Search..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 text-sm bg-white dark:bg-slate-700 dark:text-white transition outline-none" />
+                        <input id="searchInput" type="search" placeholder="Search..." class="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 text-sm bg-white dark:bg-slate-700 dark:text-white transition outline-none" />
                     </div>
-                    <button id="btnAdd" class="flex-shrink-0 bg-[#6FA774] hover:bg-[#5E9163] text-white px-4 py-2 rounded-xl text-2xl font-light shadow-lg hover:shadow-green-200 transition pb-3 h-10 w-10 flex items-center justify-center">+</button>
+                    <button id="btnAdd" class="flex-shrink-0 bg-[#6FA774] hover:bg-[#5E9163] text-white px-3 sm:px-4 py-2 rounded-xl text-xl sm:text-2xl font-light shadow-lg hover:shadow-green-200 transition pb-2 sm:pb-3 h-9 sm:h-10 w-9 sm:w-10 flex items-center justify-center">+</button>
                 </div>
             </div>
 
-            <x-task-grids :tasks="$tasks" />
+            <div class="relative z-0">
+                <x-task.grids :tasks="$tasks" />
+            </div>
 
-            <x-chart-view />
+            <x-dashboard.chart-view />
 
         </section>
     </div>
-
-    <x-dashboard-summary :tasks="$tasks" />
-
+    <x-dashboard.summary :tasks="$tasks" />
 
     @push('scripts')
     <script>
@@ -93,6 +73,10 @@
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     async function apiCall(url, method, body = null) {
+        if (!url.startsWith('/api/')) {
+            url = '/api/v1' + url;
+        }
+        
         const headers = {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken,
@@ -103,10 +87,14 @@
         
         try {
             const res = await fetch(url, options);
-            if (!res.ok) throw new Error('API Error');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                console.error('API Error:', res.status, errorData);
+                throw new Error(`API Error: ${res.status}`);
+            }
             return await res.json();
         } catch (error) {
-            console.error(error);
+            console.error('API Call Error:', error);
             return null;
         }
     }
@@ -121,7 +109,7 @@
     let itemsPerPage = 6;
     let currentPage = 1;
     let currentFilter = 'all';
-    let currentSort = 'created_desc';
+    let currentSort = 'newest';
     let currentSearch = '';
     let selectedDateOnCalendar = null;
     let currentViewDate = new Date();
@@ -177,6 +165,32 @@
     });
 
     // --- HELPER FUNCTIONS ---
+    // Make toggleViewMode globally accessible early
+    function toggleViewMode() {
+        const list = document.getElementById('listView');
+        const analytics = document.getElementById('analyticsView');
+        const iconList = document.getElementById('iconList');
+        const iconChart = document.getElementById('iconChart');
+
+        if (!list || !analytics || !iconList || !iconChart) return;
+
+        if (list.classList.contains('hidden')) {
+            // Switch to List View
+            list.classList.remove('hidden');
+            analytics.classList.add('hidden');
+            iconList.classList.remove('hidden');
+            iconChart.classList.add('hidden');
+        } else {
+            // Switch to Analytics View
+            list.classList.add('hidden');
+            analytics.classList.remove('hidden');
+            iconList.classList.add('hidden');
+            iconChart.classList.remove('hidden');
+            renderChart();
+        }
+    }
+    window.toggleViewMode = toggleViewMode;
+    
     const byPriorityValue = (p) => ({low:1, medium:2, high:3})[p] || 2;
     const timeFromISO = (iso) => {
         if (!iso) return '';
@@ -315,20 +329,35 @@
     }
     // Calendar settings modal events
     const dateModal = document.getElementById('dateSelectModal');
-    document.getElementById('btnOpenCalendarSettings').addEventListener('click', () => {
-        document.getElementById('selectMonth').value = currentViewDate.getMonth();
-        document.getElementById('inputYear').value = currentViewDate.getFullYear();
-        dateModal.classList.remove('hidden'); dateModal.classList.add('flex');
-    });
-    document.getElementById('btnCloseDateModal').addEventListener('click', () => { dateModal.classList.add('hidden'); dateModal.classList.remove('flex'); });
-    document.getElementById('btnApplyDate').addEventListener('click', () => {
-        const m = parseInt(document.getElementById('selectMonth').value);
-        const y = parseInt(document.getElementById('inputYear').value);
-        if (!isNaN(m) && !isNaN(y)) {
-            currentViewDate.setFullYear(y); currentViewDate.setMonth(m); renderCalendar();
-        }
-        dateModal.classList.add('hidden'); dateModal.classList.remove('flex');
-    });
+    const btnOpenCalendarSettings = document.getElementById('btnOpenCalendarSettings');
+    if (btnOpenCalendarSettings) {
+        btnOpenCalendarSettings.addEventListener('click', () => {
+            document.getElementById('selectMonth').value = currentViewDate.getMonth();
+            document.getElementById('inputYear').value = currentViewDate.getFullYear();
+            if (dateModal) {
+                dateModal.classList.remove('hidden'); 
+                dateModal.classList.add('flex');
+            }
+        });
+    }
+    const btnCloseDateModal = document.getElementById('btnCloseDateModal');
+    if (btnCloseDateModal && dateModal) {
+        btnCloseDateModal.addEventListener('click', () => { 
+            dateModal.classList.add('hidden'); 
+            dateModal.classList.remove('flex'); 
+        });
+    }
+    const btnApplyDate = document.getElementById('btnApplyDate');
+    if (btnApplyDate && dateModal) {
+        btnApplyDate.addEventListener('click', () => {
+            const m = parseInt(document.getElementById('selectMonth').value);
+            const y = parseInt(document.getElementById('inputYear').value);
+            if (!isNaN(m) && !isNaN(y)) {
+                currentViewDate.setFullYear(y); currentViewDate.setMonth(m); renderCalendar();
+            }
+            dateModal.classList.add('hidden'); dateModal.classList.remove('flex');
+        });
+    }
 
     // --- NOTIFICATIONS ---
     function checkNotifications() {
@@ -366,8 +395,40 @@
             const q = currentSearch.trim().toLowerCase();
             arr = arr.filter(t => (t.title||'').toLowerCase().includes(q) || (t.desc||'').toLowerCase().includes(q));
         }
-        if (currentSort === 'created_desc') arr.sort((a,b)=> (b.created||0) - (a.created||0));
-        if (currentSort === 'priority_desc') arr.sort((a,b)=> byPriorityValue(b.priority) - byPriorityValue(a.priority));
+        // Sort logic
+        if (currentSort === 'newest') {
+            arr.sort((a,b)=> (b.created||0) - (a.created||0));
+        } else if (currentSort === 'high') {
+            // Sort by priority (high first), then by newest
+            arr.sort((a,b)=> {
+                const priorityA = byPriorityValue(a.priority);
+                const priorityB = byPriorityValue(b.priority);
+                if (priorityB !== priorityA) return priorityB - priorityA;
+                return (b.created||0) - (a.created||0);
+            });
+            // Filter to show only high priority tasks
+            arr = arr.filter(t => byPriorityValue(t.priority) === 3);
+        } else if (currentSort === 'medium') {
+            // Sort by priority, then by newest
+            arr.sort((a,b)=> {
+                const priorityA = byPriorityValue(a.priority);
+                const priorityB = byPriorityValue(b.priority);
+                if (priorityB !== priorityA) return priorityB - priorityA;
+                return (b.created||0) - (a.created||0);
+            });
+            // Filter to show only medium priority tasks
+            arr = arr.filter(t => byPriorityValue(t.priority) === 2);
+        } else if (currentSort === 'low') {
+            // Sort by priority, then by newest
+            arr.sort((a,b)=> {
+                const priorityA = byPriorityValue(a.priority);
+                const priorityB = byPriorityValue(b.priority);
+                if (priorityB !== priorityA) return priorityB - priorityA;
+                return (b.created||0) - (a.created||0);
+            });
+            // Filter to show only low priority tasks
+            arr = arr.filter(t => byPriorityValue(t.priority) === 1);
+        }
         return arr;
     }
 
@@ -425,7 +486,7 @@
         }).join('');
 
         if(visible.length === 0) {
-            container.innerHTML = `<div class="col-span-1 md:col-span-2 text-center py-10"><div class="text-6xl mb-4">📝</div><h3 class="text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3></div>`;
+            container.innerHTML = `<div class="col-span-1 md:col-span-2 text-center py-10"><div class="text-6xl mb-4">📝</div><h3 class="text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3><p class="text-sm text-gray-400">Create a new task to get started!</p></div>`;
         }
 
         // Update Stats
@@ -438,9 +499,15 @@
         container.querySelectorAll('.editTaskBtn').forEach(b => b.addEventListener('click', () => openEditModal(b.dataset.id)));
         container.querySelectorAll('.deleteTaskBtn').forEach(b => b.addEventListener('click', () => confirmDelete(b.dataset.id)));
 
-        // Load More
+        // Load More - chỉ hiển thị khi có > 4 tasks và chưa hiển thị hết
         const loadMoreBtn = document.getElementById('btnLoadMore');
-        if (loadMoreBtn) loadMoreBtn.style.display = (end >= total) ? 'none' : 'block';
+        if (loadMoreBtn) {
+            if (total <= 4) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = (end >= total) ? 'none' : 'block';
+            }
+        }
         
         // Update Chart if visible
         if (!document.getElementById('analyticsView').classList.contains('hidden')) renderChart();
@@ -505,27 +572,6 @@
         });
     }
 
-    function toggleViewMode() {
-        const list = document.getElementById('listView');
-        const analytics = document.getElementById('analyticsView');
-        const iconList = document.getElementById('iconList');
-        const iconChart = document.getElementById('iconChart');
-
-        if (list.classList.contains('hidden')) {
-            // Switch to List View
-            list.classList.remove('hidden');
-            analytics.classList.add('hidden');
-            iconList.classList.remove('hidden');
-            iconChart.classList.add('hidden');
-        } else {
-            // Switch to Analytics View
-            list.classList.add('hidden');
-            analytics.classList.remove('hidden');
-            iconList.classList.add('hidden');
-            iconChart.classList.remove('hidden');
-            renderChart();
-        }
-    }
 
     function renderChart() {
         const chartCanvas = document.getElementById('taskChart');
@@ -661,14 +707,7 @@
         });
     }
 
-    // Event listener for time range filter
-    const analyticsRangeSelect = document.getElementById('analyticsRangeSelect');
-    if (analyticsRangeSelect) {
-        analyticsRangeSelect.addEventListener('change', e => {
-            analyticsRange = e.target.value;
-            renderChart();
-        });
-    }
+    // Event listener for time range filter (handled via Livewire component)
 
     // --- POMODORO LOGIC ---
     let timerInterval = null;
@@ -721,9 +760,12 @@
         cancelPomodoro();
     }
     // Bind Pomodoro Events
-    document.getElementById('btnPomoStart').addEventListener('click', startPomodoro);
-    document.getElementById('btnPomoPause').addEventListener('click', pausePomodoro);
-    document.getElementById('btnPomoCancel').addEventListener('click', cancelPomodoro);
+    const btnPomoStart = document.getElementById('btnPomoStart');
+    if (btnPomoStart) btnPomoStart.addEventListener('click', startPomodoro);
+    const btnPomoPause = document.getElementById('btnPomoPause');
+    if (btnPomoPause) btnPomoPause.addEventListener('click', pausePomodoro);
+    const btnPomoCancel = document.getElementById('btnPomoCancel');
+    if (btnPomoCancel) btnPomoCancel.addEventListener('click', cancelPomodoro);
 
     // --- CRUD & EVENTS ---
     async function toggleComplete(id){
@@ -770,6 +812,7 @@
         document.getElementById('taskPriority').value = 'medium';
         document.getElementById('taskNotify').checked = false;
         setSelectedColor();
+        renderColorOptions(); // Đảm bảo color picker được render
         document.getElementById('modalBackdrop').classList.remove('hidden');
         document.getElementById('modalBackdrop').classList.add('flex');
     }
@@ -788,6 +831,7 @@
         document.getElementById('taskDueTime').value = t.dueTime || '';
         document.getElementById('taskPriority').value = t.priority;
         document.getElementById('taskNotify').checked = t.notify || false;
+        renderColorOptions(); // Đảm bảo color picker được render
         setSelectedColor(t.color || DEFAULT_COLOR);
         document.getElementById('modalBackdrop').classList.remove('hidden');
         document.getElementById('modalBackdrop').classList.add('flex');
@@ -800,13 +844,18 @@
         delModal.classList.add('flex'); 
     }
 
-    document.getElementById('btnCancelDelete').addEventListener('click', () => { 
-        deletingId = null; 
-        delModal.classList.add('hidden'); 
-        delModal.classList.remove('flex'); 
-    });
+    const btnCancelDelete = document.getElementById('btnCancelDelete');
+    if (btnCancelDelete && delModal) {
+        btnCancelDelete.addEventListener('click', () => { 
+            deletingId = null; 
+            delModal.classList.add('hidden'); 
+            delModal.classList.remove('flex'); 
+        });
+    }
 
-    document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+    const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+    if (btnConfirmDelete && delModal) {
+        btnConfirmDelete.addEventListener('click', async () => {
         if (deletingId) {
             const id = deletingId;
             
@@ -828,22 +877,44 @@
         deletingId = null; 
         delModal.classList.add('hidden'); 
         delModal.classList.remove('flex');
+        });
+    }
+
+    // Function to close modal
+    function closeModal() {
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        if (modalBackdrop) {
+            modalBackdrop.classList.add('hidden'); 
+            modalBackdrop.classList.remove('flex');
+        }
+        editingId = null;
+    }
+
+    const btnAdd = document.getElementById('btnAdd');
+    if (btnAdd) btnAdd.addEventListener('click', openAddModal);
+    
+    // THÊM ĐOẠN NÀY ĐỂ KÍCH HOẠT
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelBtn = document.getElementById('cancelModal');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal();
+            });
+        }
     });
 
-    document.getElementById('btnAdd').addEventListener('click', openAddModal);
-    document.getElementById('cancelModal').addEventListener('click', () => { 
-        document.getElementById('modalBackdrop').classList.add('hidden'); 
-        document.getElementById('modalBackdrop').classList.remove('flex'); 
-    });
-
-    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+    const taskForm = document.getElementById('taskForm');
+    if (taskForm) {
+        taskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('taskTitle').value.trim(); 
         if(!title) return;
         
         const payload = {
             title: title,
-            desc: document.getElementById('taskDesc').value.trim(),
+            description: document.getElementById('taskDesc').value.trim(),
             category: document.getElementById('taskCategory').value,
             start_date: document.getElementById('taskStartDate').value,
             start_time: document.getElementById('taskStartTime').value,
@@ -854,33 +925,35 @@
             color: document.querySelector('input[name="taskColor"]:checked')?.value || DEFAULT_COLOR
         };
 
+        let result;
         if(editingId){
-            await apiCall(`/tasks/${editingId}`, 'PUT', payload);
+            result = await apiCall(`/tasks/${editingId}`, 'PUT', payload);
         } else {
-            await apiCall('/tasks', 'POST', payload);
+            result = await apiCall('/tasks', 'POST', payload);
         }
         
-        document.getElementById('modalBackdrop').classList.add('hidden');
-        document.getElementById('modalBackdrop').classList.remove('flex');
-        
-        // Reload để lấy HTML mới từ server
-        window.location.reload();
-    });
-
-    // Filter/Search - chỉ ẩn/hiện cards
-    document.getElementById('searchInput').addEventListener('input', e => { 
-        currentSearch = e.target.value; 
-        currentPage = 1; 
-        filterTasksInDOM(); 
-    });
+        if (result) {
+            document.getElementById('modalBackdrop').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.remove('flex');
+            
+            // Reload để lấy HTML mới từ server
+            window.location.reload();
+        } else {
+            alert('Failed to save task. Please try again.');
+        }
+        });
+    }
 
     // Control Events
-    document.getElementById('searchInput').addEventListener('input', e => { currentSearch = e.target.value; currentPage=1; renderTasks(); });
-    const filterStatusSelect = document.getElementById('filterStatus');
-    if (filterStatusSelect) filterStatusSelect.addEventListener('change', e => { currentFilter = e.target.value; currentPage=1; renderTasks(); });
-    const filterCategorySelect = document.getElementById('filterCategory');
-    if (filterCategorySelect) filterCategorySelect.addEventListener('change', e => { currentCategory = e.target.value; currentPage=1; renderTasks(); });
-    document.getElementById('sortSelect').addEventListener('change', e => { currentSort = e.target.value; renderTasks(); });
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', e => { 
+            currentSearch = e.target.value; 
+            currentPage = 1; 
+            renderTasks(); 
+        });
+    }
+    // Event listeners for Livewire dropdowns are handled via Livewire.on() below
     const btnLoadMore = document.getElementById('btnLoadMore');
     if (btnLoadMore) btnLoadMore.addEventListener('click', () => { currentPage++; renderTasks(); });
 
@@ -891,6 +964,37 @@
         renderTasks();
     }
 
+    // Initialize helper functions for Livewire components
+    if (typeof window.getCategoryName === 'undefined') {
+        window.getCategoryName = function(categoryId) {
+            return 'Unknown';
+        };
+    }
+
+    // listen to category, status, sort changes
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('category-changed', (category) => {
+            currentCategory = category === 'all' ? 'all' : category;
+            currentPage = 1;
+            renderTasks();
+        });
+
+        Livewire.on('status-changed', (status) => {
+            currentFilter = status;
+            currentPage = 1;
+            renderTasks();
+        });
+
+        Livewire.on('sort-changed', (sort) => {
+            currentSort = sort;
+            renderTasks();
+        });
+
+        Livewire.on('analytics-range-changed', (range) => {
+            analyticsRange = range;
+            renderChart();
+        });
+    });
     // BOOTSTRAP
     (function boot(){
         initTheme(); 
@@ -908,9 +1012,21 @@
         document.querySelectorAll('.editTaskBtn').forEach(b => b.addEventListener('click', () => openEditModal(b.dataset.id)));
         document.querySelectorAll('.deleteTaskBtn').forEach(b => b.addEventListener('click', () => confirmDelete(b.dataset.id)));
         
+        // Close modal when clicking on backdrop
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        if (modalBackdrop) {
+            modalBackdrop.addEventListener('click', (e) => {
+                // Only close if clicking directly on backdrop, not on modal content
+                if (e.target === modalBackdrop) {
+                    closeModal();
+                }
+            });
+        }
+        
         if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission();
     })();
 
+
     </script>
     @endpush
-</x-user-layout>
+@endsection
