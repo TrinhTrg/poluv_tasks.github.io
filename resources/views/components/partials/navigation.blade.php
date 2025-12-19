@@ -24,16 +24,136 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3 md:gap-4 border-l pl-3 sm:pl-4 md:pl-6 border-gray-300 dark:border-slate-600">
-        <div class="hidden sm:block text-right">
-            <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Welcome back</div>
-            <div class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white">
-                {{ Auth::check() ? Auth::user()->name : 'Guest User' }}
+        @auth
+            {{-- Authenticated User --}}
+            <div class="hidden sm:block text-right">
+                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Welcome back</div>
+                <div class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white">
+                    {{ Auth::user()->username ?? Auth::user()->name }}
+                </div>
             </div>
-        </div>
-        <div class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-600 shadow-md hover:ring-2 hover:ring-pink-300 transition">
-            <img src="https://i.pravatar.cc/150?u={{ Auth::id() ?? 1 }}" 
-                 alt="avatar" 
-                 class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300">
-        </div>
+            <div class="relative" id="authAvatarDropdown">
+                <button 
+                    type="button"
+                    id="authAvatarBtn"
+                    class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-600 shadow-md hover:ring-2 hover:ring-pink-300 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-300"
+                >
+                    <img src="https://i.pravatar.cc/150?u={{ Auth::id() }}" 
+                         alt="avatar" 
+                         id="authAvatarImg"
+                         class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300">
+                </button>
+                {{-- Dropdown menu --}}
+                <div 
+                    id="authDropdownMenu"
+                    class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-50 hidden"
+                >
+                    <div class="py-2">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700">
+                            Profile
+                        </a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700">
+                            Settings
+                        </a>
+                        <div class="border-t border-gray-100 dark:border-slate-700 mt-1 pt-1">
+                            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer">
+                                Language
+                            </div>
+                        </div>
+                        <form action="{{ route('logout') }}" method="POST" class="border-t border-gray-100 dark:border-slate-700 mt-1">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @else
+            {{-- Guest User --}}
+            <div class="hidden sm:block text-right">
+                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Welcome</div>
+                <div class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white">
+                    Guest!
+                </div>
+            </div>
+            <div class="relative" id="guestAvatarDropdown">
+                <button 
+                    type="button"
+                    id="guestAvatarBtn"
+                    class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center border-2 border-white dark:border-slate-600 shadow-md hover:ring-2 hover:ring-pink-300 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-300"
+                >
+                    {{-- Generic guest avatar icon --}}
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-200" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-3.33 0-6 2.24-6 5v1h12v-1c0-2.76-2.67-5-6-5z"/>
+                    </svg>
+                </button>
+                {{-- Dropdown menu --}}
+                <div 
+                    id="guestDropdownMenu"
+                    class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-50 hidden"
+                >
+                    <div class="py-2">
+                        <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 transition">
+                            Sign In
+                        </a>
+                        <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 transition">
+                            Sign Up
+                        </a>
+                        <div class="border-t border-gray-100 dark:border-slate-700 mt-1 pt-1">
+                            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer transition">
+                                Language
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endauth
     </div>
+    
 </div>
+
+@push('scripts')
+<script>
+    // Avatar dropdown functionality (both guest and authenticated)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Guest avatar dropdown
+        const guestAvatarBtn = document.getElementById('guestAvatarBtn');
+        const guestDropdownMenu = document.getElementById('guestDropdownMenu');
+        
+        if (guestAvatarBtn && guestDropdownMenu) {
+            // Toggle dropdown on click
+            guestAvatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                guestDropdownMenu.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!guestAvatarBtn.contains(e.target) && !guestDropdownMenu.contains(e.target)) {
+                    guestDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Authenticated user avatar dropdown
+        const authAvatarBtn = document.getElementById('authAvatarBtn');
+        const authDropdownMenu = document.getElementById('authDropdownMenu');
+        
+        if (authAvatarBtn && authDropdownMenu) {
+            // Toggle dropdown on click
+            authAvatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                authDropdownMenu.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!authAvatarBtn.contains(e.target) && !authDropdownMenu.contains(e.target)) {
+                    authDropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>
+@endpush

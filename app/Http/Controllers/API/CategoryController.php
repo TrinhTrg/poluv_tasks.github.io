@@ -5,9 +5,17 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
+    /**
+     * Get current user ID or null for guest
+     */
+    protected function getUserId()
+    {
+        return Auth::check() ? Auth::id() : null;
+    }
     /**
      * LẤY DANH SÁCH CHO DROPDOWN
      * GET /api/v1/categories
@@ -17,9 +25,19 @@ class CategoryController extends Controller
         // Với Dropdown, ta thường cần lấy HẾT danh mục để user chọn,
         // chứ không phân trang (paginate) vì dropdown khó bấm "Trang sau".
         
+        $userId = $this->getUserId();
+        
         $categories = Category::query()
-            // 1. Chỉ lấy của User hiện tại (Tạm fix cứng là 1)
-            ->where('user_id', 1) 
+            // 1. Lấy categories của User hiện tại hoặc guest
+            ->when($userId !== null, function($q) use ($userId) {
+                return $q->where('user_id', $userId);
+            }, function($q) {
+                // Guest mode: lấy categories không có user_id hoặc user_id = 1
+                return $q->where(function($query) {
+                    $query->whereNull('user_id')
+                          ->orWhere('user_id', 1);
+                });
+            }) 
             
             // 2. Sắp xếp: Cái nào mới tạo lên đầu
             ->orderBy('id', 'desc')
@@ -42,8 +60,8 @@ class CategoryController extends Controller
             'color' => 'required|string|max:7', // Mã màu Hex (VD: #FF0000)
         ]);
 
-        // Gán cứng user_id = 1 (Sau này đổi thành auth()->id())
-        $validated['user_id'] = 1;
+        // Gán user_id: null cho guest, Auth::id() cho authenticated
+        $validated['user_id'] = $this->getUserId();
 
         $category = Category::create($validated);
 
@@ -55,8 +73,12 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        // Bảo mật: Kiểm tra xem danh mục này có phải của User 1 không
-        if ($category->user_id !== 1) {
+        $userId = $this->getUserId();
+        // Check ownership
+        if ($userId !== null && $category->user_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($userId === null && $category->user_id !== null && $category->user_id !== 1) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
         return response()->json($category);
@@ -68,7 +90,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        if ($category->user_id !== 1) {
+        $userId = $this->getUserId();
+        // Check ownership
+        if ($userId !== null && $category->user_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($userId === null && $category->user_id !== null && $category->user_id !== 1) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -88,7 +115,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->user_id !== 1) {
+        $userId = $this->getUserId();
+        // Check ownership
+        if ($userId !== null && $category->user_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($userId === null && $category->user_id !== null && $category->user_id !== 1) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

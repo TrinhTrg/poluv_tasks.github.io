@@ -6,11 +6,32 @@
         @forelse($tasks as $task)
             <x-task.card :task="$task" />
         @empty
-            <div class="col-span-1 md:col-span-2 text-center py-8 sm:py-10">
-                <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
-                <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3>
-                <p class="text-xs sm:text-sm text-gray-400">Create a new task to get started!</p>
+            @guest
+                {{-- Landing Page Content for Guest --}}
+                <div class="col-span-1 md:col-span-2 text-center py-12 sm:py-16 md:py-20">
+                    <div class="text-6xl sm:text-7xl md:text-8xl mb-6 sm:mb-8">📋✨</div>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif text-gray-900 dark:text-white mb-4 sm:mb-6">
+                        Welcome to PoLuv Tasks
+                    </h2>
+                    <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
+                        Your personal task management companion. Organize your life, boost your productivity, and achieve your goals.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <a href="{{ route('login') }}" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition shadow-lg">
+                            Sign In
+                        </a>
+                        <a href="{{ route('register') }}" class="bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-white px-6 py-3 rounded-xl font-semibold transition">
+                            Sign Up
+                        </a>
+                    </div>
+                </div>
+            @else
+                <div class="col-span-1 md:col-span-2 text-center py-8 sm:py-10">
+                    <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
+                    <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3>
+                    <p class="text-xs sm:text-sm text-gray-400">Create a new task to get started!</p>
             </div>
+            @endguest
         @endforelse
 
     </div>

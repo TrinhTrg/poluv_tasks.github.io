@@ -13,9 +13,16 @@ class HomepageController extends Controller
      */
     public function index()
     {
-        // Lấy tất cả tasks với relationship category, sắp xếp mới nhất lên đầu
-        // Lưu ý: Đảm bảo bạn đã có model Task và migration như các bước trước
-        $tasks = Task::with('category')->orderBy('created_at', 'desc')->get();
+        // Guest không thể xem tasks của user khác - chỉ hiển thị landing page
+        if (Auth::check()) {
+            $tasks = Task::with('category')
+                ->where('user_id', Auth::id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            // Guest mode: không hiển thị tasks, chỉ hiển thị landing page
+            $tasks = collect([]); // Empty collection
+        }
 
         // Tính toán tasks cho hôm nay (để render sidebar ngay từ server)
         $today = now()->format('Y-m-d');

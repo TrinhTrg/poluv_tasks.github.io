@@ -28,6 +28,7 @@ class TaskFactory extends Factory
             'color' => fake()->hexColor(), // Color Tag của task
             'priority' => fake()->numberBetween(1, 3), // 1: Low, 2: Med, 3: High
             'has_notify' => fake()->boolean(),
+            'is_notified' => false, // Default: chưa được thông báo
             'is_completed' => fake()->boolean(20), // 20% khả năng là đã hoàn thành
         ];
     }
