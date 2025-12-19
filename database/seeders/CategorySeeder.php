@@ -25,8 +25,9 @@ class CategorySeeder extends Seeder
         $categories = [
             ['name' => 'Work', 'color' => '#3B82F6'], // Blue
             ['name' => 'Personal', 'color' => '#10B981'], // Green
-            ['name' => 'Health', 'color' => '#EF4444'], // Red
-            ['name' => 'Study', 'color' => '#F59E0B'], // Yellow
+            ['name' => 'Homework', 'color' => '#EF4444'], // Red
+            ['name' => 'Meeting', 'color' => '#F59E0B'], // Yellow
+            ['name' => 'Other', 'color' => '#6B7280'], // Gray
         ];
 
         foreach ($categories as $cat) {

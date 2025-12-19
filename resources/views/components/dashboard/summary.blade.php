@@ -2,8 +2,8 @@
 
 @php
     // Tính toán số liệu ban đầu từ server để hiển thị ngay lập tức
-    $completedCount = $tasks->where('completed', true)->count();
-    $pendingCount   = $tasks->where('completed', false)->count();
+    $completedCount = $tasks->where('is_completed', true)->count();
+    $pendingCount   = $tasks->where('is_completed', false)->count();
     $totalCount     = $tasks->count();
 @endphp
 

@@ -1,4 +1,8 @@
-<a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group">
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
+
+<a href="{{ Auth::check() ? route('home') : url('/') }}" class="flex items-center gap-2 sm:gap-3 group">
     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
         <img src="{{ asset('poluv_light.png') }}"
              alt="PoLuv Logo Light"

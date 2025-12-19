@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
     ];
@@ -50,5 +51,11 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    // Một User có nhiều Categories
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 }
