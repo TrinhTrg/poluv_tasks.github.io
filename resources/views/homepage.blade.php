@@ -651,10 +651,10 @@
                     emptyState.querySelector('h3') ||
                     emptyState.classList.contains('empty-state-server')) {
                     emptyState.remove();
-                }
+                } 
             });
             
-            // Show empty state if no tasks (only if we don't already have one)
+            // Show empty state if no tasks (only if we don' t already have one)
             if (visibleCount === 0) {
                 // Check if empty state already exists
                 const hasEmptyState = Array.from(taskList.children).some(child => {
