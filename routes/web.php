@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,22 @@ Route::get('/verify-reset-code', [AuthController::class, 'showVerifyCode'])->nam
 Route::post('/verify-reset-code', [AuthController::class, 'verifyCode'])->name('password.verify.post');
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.reset.post');
+
+// Profile routes (only for authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// Language switching route
+Route::post('/language/switch', function (\Illuminate\Http\Request $request) {
+    $locale = $request->input('locale', 'en');
+    
+    if (in_array($locale, ['en', 'vi'])) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    
+    return redirect()->back();
+})->name('language.switch');
+

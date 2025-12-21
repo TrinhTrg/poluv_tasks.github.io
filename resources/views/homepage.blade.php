@@ -3,8 +3,8 @@
 @section('main-content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-4">
         <h1 class="text-3xl md:text-4xl font-serif text-gray-900 dark:text-white leading-tight">
-        Hello, <span id="userName" class="underline decoration-pink-300 decoration-2 underline-offset-4">{{ Auth::check() ? (Auth::user()->username ?? Auth::user()->name) : 'Guest' }}</span>, 
-            <span class="text-gray-500 dark:text-gray-400 font-sans font-light block sm:inline mt-2 sm:mt-0 sm:ml-2 text-2xl sm:text-2xl">Ready to focus?</span>
+        {{ __('homepage.hello') }}, <span id="userName" class="underline decoration-pink-300 decoration-2 underline-offset-4">{{ Auth::check() ? (Auth::user()->username ?? Auth::user()->name) : __('homepage.guest') }}</span>, 
+            <span class="text-gray-500 dark:text-gray-400 font-sans font-light block sm:inline mt-2 sm:mt-0 sm:ml-2 text-2xl sm:text-2xl">{{ __('homepage.ready_to_focus') }}</span>
         </h1>
     </div>
 
@@ -24,7 +24,7 @@
                         <button id="btnToggleView" class="flex items-center gap-1.5 sm:gap-2 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-indigo-200 transition" onclick="toggleViewMode()">
                             <svg id="iconList" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                             <svg id="iconChart" class="w-4 h-4 sm:w-5 sm:h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
-                            <span class="xs:inline">View</span>
+                            <span class="xs:inline">{{ __('homepage.view') }}</span>
                     </button>
                     
                         <livewire:status-dropdown />
@@ -35,7 +35,7 @@
                     </div>
                 @else
                     <div class="flex flex-wrap gap-2 overflow-visible relative">
-                        <p class="text-sm text-gray-600 dark:text-gray-400 italic">Sign in to access all features</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 italic">{{ __('homepage.sign_in_to_access') }}</p>
                     </div>
                 @endauth
 
@@ -64,6 +64,54 @@
 
     @push('scripts')
     <script>
+        // --- TRANSLATIONS ---
+        window.translations = {
+            taskReminder: @json(__('notification.task_reminder')),
+            taskDueAt: @json(__('notification.task_due_at')),
+            noUpcoming: @json(__('notification.no_upcoming')),
+            noTasksFound: @json(__('homepage.no_tasks_found')),
+            tryAdjustingFilters: @json(__('homepage.try_adjusting_filters')),
+            noTasksToday: @json(__('homepage.no_tasks_today')),
+            noTasksForDate: @json(__('common.no_tasks_for_date')),
+            trySelectingAnotherDate: @json(__('common.try_selecting_another_date'))
+        };
+        
+        // Calendar translations
+        window.calendarTranslations = {
+            months: [
+                @json(__('calendar.january')),
+                @json(__('calendar.february')),
+                @json(__('calendar.march')),
+                @json(__('calendar.april')),
+                @json(__('calendar.may')),
+                @json(__('calendar.june')),
+                @json(__('calendar.july')),
+                @json(__('calendar.august')),
+                @json(__('calendar.september')),
+                @json(__('calendar.october')),
+                @json(__('calendar.november')),
+                @json(__('calendar.december'))
+            ],
+            days: [
+                @json(__('calendar.sunday')),
+                @json(__('calendar.monday')),
+                @json(__('calendar.tuesday')),
+                @json(__('calendar.wednesday')),
+                @json(__('calendar.thursday')),
+                @json(__('calendar.friday')),
+                @json(__('calendar.saturday'))
+            ],
+            dayAbbrs: [
+                @json(__('calendar.su')),
+                @json(__('calendar.mo')),
+                @json(__('calendar.tu')),
+                @json(__('calendar.we')),
+                @json(__('calendar.th')),
+                @json(__('calendar.fr')),
+                @json(__('calendar.sa'))
+            ]
+        };
+        
         // --- HOMEPAGE CORE SCRIPTS (Global Variables, API, Helpers, Search, Livewire) ---
         window.tasks = @json($tasks);
 
@@ -339,14 +387,19 @@
         window.escapeHtml = escapeHtml;
 
     // --- NOTIFICATIONS ---
+    // Track which tasks have been notified to avoid duplicate notifications
+    window.notifiedTaskIds = window.notifiedTaskIds || new Set();
+    
     function checkNotifications() {
             if (typeof window.tasks === 'undefined') return;
             
         const now = new Date();
         const next24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
             const urgentTasks = window.tasks.filter(t => {
-                if(!t.date || t.is_completed || t.completed || !(t.has_notify || t.notify)) return false;
-            const d = new Date(t.date);
+                // Use due_at or date field (mapped from due_at)
+                const dueDate = t.due_at || t.date || t.due_date;
+                if(!dueDate || t.is_completed || t.completed || !(t.has_notify || t.notify)) return false;
+            const d = new Date(dueDate);
             return d >= now && d <= next24h;
         });
         const badge = document.getElementById('notifBadge');
@@ -356,15 +409,91 @@
                 if (badge) badge.innerText = urgentTasks.length;
                 if (badge) badge.classList.remove('hidden');
                 if (bell) bell.classList.add('text-red-500', 'bell-animate');
-                if (list) list.innerHTML = urgentTasks.map(t => `<li class="font-medium text-red-600 border-b dark:border-slate-700 pb-1 mb-1 last:border-0">• ${escapeHtml(t.title)}</li>`).join('');
+                if (list) {
+                    list.innerHTML = urgentTasks.map(t => `
+                        <li class="font-medium text-red-600 border-b dark:border-slate-700 pb-1 mb-1 last:border-0 cursor-pointer hover:text-pink-600 dark:hover:text-pink-400 transition-colors" 
+                            data-task-id="${t.id}" 
+                            onclick="highlightTask(${t.id})">
+                            • ${escapeHtml(t.title)}
+                        </li>
+                    `).join('');
+                }
+                
+                // Send browser notifications for tasks that haven't been notified yet
+                if ("Notification" in window && Notification.permission === "granted") {
+                    urgentTasks.forEach(task => {
+                        const taskId = task.id.toString();
+                        // Only send notification if not already notified
+                        if (!window.notifiedTaskIds.has(taskId)) {
+                            const dueDate = new Date(task.due_at || task.date || task.due_date);
+                            const dueTime = dueDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            
+                            const titleText = window.translations.taskReminder.replace(':title', escapeHtml(task.title));
+                            const bodyText = window.translations.taskDueAt.replace(':title', escapeHtml(task.title)).replace(':time', dueTime);
+                            new Notification(titleText, {
+                                body: bodyText,
+                                icon: '/favicon-32x32.png', // Use your app icon
+                                tag: 'task-' + taskId, // Prevent duplicate notifications
+                                requireInteraction: false,
+                            });
+                            
+                            // Mark as notified
+                            window.notifiedTaskIds.add(taskId);
+                        }
+                    });
+                }
         } else {
                 if (badge) badge.classList.add('hidden');
                 if (bell) bell.classList.remove('text-red-500', 'bell-animate');
-                if (list) list.innerHTML = '<li class="text-gray-400 italic">No upcoming tasks</li>';
-            }
+                if (list) list.innerHTML = '<li class="text-gray-400 italic text-center py-2">' + window.translations.noUpcoming + '</li>';
+        }
         }
 
-        function renderTodaySchedule() {
+    // Highlight task card with pink border and scroll to it
+    function highlightTask(taskId) {
+        // Find task card in the task list (not in notification list)
+        const taskList = document.getElementById('taskList');
+        if (!taskList) {
+            console.warn('Task list not found');
+            return;
+        }
+        
+        // Remove previous highlights from task cards only
+        taskList.querySelectorAll('[data-task-id]').forEach(card => {
+            card.classList.remove('ring-4', 'ring-pink-400', 'ring-offset-2', 'shadow-lg');
+        });
+        
+        // Find the task card in task list
+        const taskCard = taskList.querySelector(`[data-task-id="${taskId}"]`);
+        if (!taskCard) {
+            console.warn('Task card not found for ID:', taskId);
+            return;
+        }
+        
+        // Add highlight classes (pink ring)
+        taskCard.classList.add('ring-4', 'ring-pink-400', 'ring-offset-2', 'shadow-lg');
+        
+        // Scroll to task card with offset for header
+        const headerOffset = 100;
+        const elementPosition = taskCard.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+        
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+            taskCard.classList.remove('ring-4', 'ring-pink-400', 'ring-offset-2', 'shadow-lg');
+        }, 3000);
+    }
+    
+    // Make functions globally available
+    window.checkNotifications = checkNotifications;
+    window.highlightTask = highlightTask;
+
+    function renderTodaySchedule() {
             if (typeof window.tasks === 'undefined') return;
             
         const todayStr = new Date().toISOString().slice(0, 10);
@@ -383,7 +512,7 @@
         dateDisplay.innerText = `${monthNames[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
 
         if (todayTasks.length === 0) {
-            container.innerHTML = '<div class="text-center text-gray-400 text-sm py-4 italic">No tasks for today. Relax! ☕</div>';
+            container.innerHTML = '<div class="text-center text-gray-400 text-sm py-4 italic">' + window.translations.noTasksToday + '</div>';
             return;
         }
         const catColors = { 'Work': 'bg-green-400', 'Homework': 'bg-blue-400', 'Meeting': 'bg-red-400', 'Personal': 'bg-yellow-400', 'Other': 'bg-purple-400' };
@@ -429,7 +558,7 @@
                         if (t.category && typeof t.category === 'object' && t.category.id === categoryId) return true;
                         return false;
                     });
-                } else {
+        } else {
                     // currentCategory là tên category, filter theo category name
                     arr = arr.filter(t => {
                         const taskCategory = typeof t.category === 'object' ? t.category.name : t.category;
@@ -519,13 +648,120 @@
                 emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10 empty-state';
                 emptyDiv.innerHTML = `
                     <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
-                    <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3>
-                    <p class="text-xs sm:text-sm text-gray-400">Try adjusting your filters!</p>
+                    <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">${window.translations.noTasksFound}</h3>
+                    <p class="text-xs sm:text-sm text-gray-400">${window.translations.tryAdjustingFilters}</p>
                 `;
                 taskList.appendChild(emptyDiv);
             }
         }
         window.renderTasks = renderTasks;
+
+    // --- RELOAD TASKS DYNAMICALLY (without page reload) ---
+    async function reloadTasks() {
+        try {
+            const taskListContainer = document.getElementById('taskList');
+            if (!taskListContainer) {
+                window.location.reload();
+                return;
+            }
+            
+            // Fetch updated HTML from server (AJAX request)
+            const htmlResponse = await fetch(window.location.href, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html',
+                },
+                credentials: 'include'
+            });
+            
+            if (htmlResponse.ok) {
+                const htmlText = await htmlResponse.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const newTaskList = doc.getElementById('taskList');
+                
+                if (newTaskList) {
+                    // Replace task list HTML
+                    taskListContainer.innerHTML = newTaskList.innerHTML;
+                    
+                    // Fetch tasks from API to update window.tasks
+                    try {
+                        const apiResponse = await window.apiCall('/tasks?per_page=1000', 'GET');
+                        // Handle both collection (when per_page >= 1000) and paginated response
+                        const tasksData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
+                        if (tasksData && tasksData.length > 0) {
+                            // Map tasks using same logic as initial load
+                            window.tasks = tasksData.map(t => {
+                                let startTime = '';
+                                if (t.start_at) {
+                                    const startAtStr = String(t.start_at).replace('T', ' ').replace('Z', '').trim();
+                                    const [datePart, timePart] = startAtStr.split(' ');
+                                    if (datePart && timePart) {
+                                        const [hours, minutes] = timePart.split(':');
+                                        startTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                                    }
+                                }
+                                
+                                let dueTime = '';
+                                if (t.due_at) {
+                                    const dueAtStr = String(t.due_at).replace('T', ' ').replace('Z', '').trim();
+                                    const [datePart, timePart] = dueAtStr.split(' ');
+                                    if (datePart && timePart) {
+                                        const [hours, minutes] = timePart.split(':');
+                                        dueTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                                    }
+                                }
+                                
+                                return {
+                                    ...t,
+                                    start_at: t.start_at || t.start_date,
+                                    startDate: t.start_at || t.start_date,
+                                    start_date: t.start_at || t.start_date,
+                                    startTime: startTime,
+                                    due_at: t.due_at || t.due_date,
+                                    date: t.due_at || t.due_date,
+                                    due_date: t.due_at || t.due_date,
+                                    dueTime: dueTime,
+                                    created: new Date(t.created_at).getTime(),
+                                    category: (t.category && typeof t.category === 'object' && t.category.name) ? t.category.name : (t.category || 'Other'),
+                                    category_id: (t.category && typeof t.category === 'object' && t.category.id) ? t.category.id : (t.category_id || null),
+                                    priority: typeof t.priority === 'number' ? t.priority : (t.priority ? parseInt(t.priority) : 2),
+                                    completed: t.is_completed,
+                                    desc: t.description,
+                                    notify: t.has_notify
+                                };
+                            });
+                        }
+                    } catch (apiError) {
+                        console.warn('Could not fetch tasks from API:', apiError);
+                    }
+                }
+            }
+            
+            // Update stats and re-render
+            if (typeof window.updateStats === 'function') {
+                window.updateStats();
+            }
+            if (typeof window.checkNotifications === 'function') {
+                window.checkNotifications();
+            }
+            if (typeof window.renderTodaySchedule === 'function') {
+                window.renderTodaySchedule();
+            }
+            if (typeof window.renderCalendar === 'function') {
+                window.renderCalendar();
+            }
+            if (typeof window.renderTasks === 'function') {
+                window.renderTasks();
+            }
+        } catch (error) {
+            console.error('Error reloading tasks:', error);
+            // Fallback: reload page if dynamic reload fails
+            window.location.reload();
+        }
+    }
+    window.reloadTasks = reloadTasks;
 
         // Control Events
         document.addEventListener('DOMContentLoaded', function() {
@@ -551,7 +787,7 @@
                 currentCategory = categoryValue === 'all' ? 'all' : categoryValue;
                 currentPage = 1;
                 renderTasks();
-            });
+    });
 
             Livewire.on('status-changed', (event) => {
                 // event có thể là object với property status hoặc là giá trị trực tiếp
@@ -565,9 +801,9 @@
                 // event có thể là object với property sort hoặc là giá trị trực tiếp
                 const sortValue = typeof event === 'object' && event.sort !== undefined ? event.sort : event;
                 currentSort = sortValue;
-                currentPage = 1;
+        currentPage = 1; 
                 renderTasks();
-            });
+    });
 
             // Search logic is now handled in Search Livewire component
             // This listener is kept for compatibility but search filtering is done client-side

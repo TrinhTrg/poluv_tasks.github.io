@@ -8,7 +8,7 @@
            type="button"
            onclick="window.history.back();"
            class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-pink-300"
-           title="Go back">
+           title="{{ __('profile.go_back') }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -19,8 +19,8 @@
         </div>
         
         <div class="text-center mb-8">
-            <h2 class="text-3xl font-serif text-gray-900 dark:text-white font-bold">Verify Code</h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">Enter the 6-digit code sent to your email.</p>
+            <h2 class="text-3xl font-serif text-gray-900 dark:text-white font-bold">{{ __('auth.verify_code') }}</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">{{ __('auth.enter_6_digit_code_sent_to_your_email') }}</p>
         </div>
 
         @if(session('success'))
@@ -34,7 +34,7 @@
             
             {{-- Email (hidden if from session) --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.email_address') }}</label>
                 <input type="email" name="email" value="{{ old('email', session('email')) }}" required 
                     class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white"
                     placeholder="Enter your email">
@@ -43,7 +43,7 @@
 
             {{-- Verification Code --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Verification Code</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.verification_code') }}</label>
                 <input type="text" name="code" value="{{ old('code') }}" required 
                     class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white text-center text-2xl font-mono tracking-widest"
                     placeholder="000000"
@@ -51,17 +51,17 @@
                     pattern="[0-9]{6}"
                     inputmode="numeric">
                 @error('code') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Enter the 6-digit code from your email</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">{{ __('auth.enter_6_digit_code_from_your_email') }}</p>
             </div>
 
             <button type="submit" class="w-full bg-pink-500 text-white py-3.5 rounded-xl font-bold hover:bg-pink-600 transition shadow-lg transform hover:-translate-y-0.5">
-                Verify Code
+                {{ __('auth.verify_code') }}
             </button>
         </form>
 
         <div class="mt-6 text-center">
             <p class="text-sm text-gray-600 dark:text-gray-400">
-                Didn't receive the code? 
+                {{ __('auth.didnt_receive_the_code') }} 
                 <a href="{{ route('password.forgot') }}" class="font-bold text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-500">Resend</a>
             </p>
         </div>

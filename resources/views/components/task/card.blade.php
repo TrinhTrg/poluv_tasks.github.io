@@ -53,13 +53,17 @@
 
     // Priority display
     $priorityValue = $task->priority ?? 2; // Default medium
-    $priorityLabels = [1 => 'Low', 2 => 'Medium', 3 => 'High'];
+    $priorityLabels = [
+        1 => __('priority.low'),
+        2 => __('priority.medium'),
+        3 => __('priority.high')
+    ];
     $priorityColors = [
         1 => 'bg-gray-100 text-gray-700 border-gray-300', // Low
         2 => 'bg-blue-100 text-blue-700 border-blue-300', // Medium
         3 => 'bg-red-100 text-red-700 border-red-300', // High
     ];
-    $priorityLabel = $priorityLabels[$priorityValue] ?? 'Medium';
+    $priorityLabel = $priorityLabels[$priorityValue] ?? __('priority.medium');
     $priorityBadgeClass = $priorityColors[$priorityValue] ?? $priorityColors[2];
 
 @endphp
@@ -68,7 +72,7 @@
      style="{{ $customStyle }}"
      data-task-id="{{ $task->id }}">
     
-    {{-- Header: Category, Title & Focus Button --}}
+    {{-- Header: Category, Title & Complete Button --}}
     <div class="flex items-center justify-between gap-3">
         <div class="flex flex-col gap-1">
             <div class="flex items-center gap-2 flex-wrap">
@@ -87,7 +91,7 @@
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Overdue
+                        {{ __('common.overdue') }}
                     </span>
                 @endif
             </div>
@@ -98,19 +102,16 @@
             </h4>
         </div>
 
-        {{-- Focus Button (chỉ hiện khi task chưa completed và user đã đăng nhập) --}}
+        {{-- Complete/Uncomplete Button (góc phải trên) --}}
         @auth
-            @if(!$task->is_completed)
-                <button 
-                    type="button"
-                    onclick="openPomodoro({{ $task->id }})"
-                    class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition" 
-                    title="Start Focus">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </button>
-            @endif
+            <button 
+                onclick="toggleComplete({{ $task->id }})" 
+                class="absolute top-4 right-4 bg-white/50 dark:bg-slate-700/50 text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-white dark:hover:bg-slate-600 transition shadow-sm completeTaskBtn" 
+                title="{{ $task->is_completed ? __('task.mark_as_pending') : __('task.mark_as_done') }}">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </button>
         @endauth
     </div>
 
@@ -147,29 +148,32 @@
         {{-- Action Buttons (hiện khi hover) - Chỉ hiển thị cho authenticated users --}}
         @auth
             <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
-                {{-- Edit --}}
-                <button 
+            {{-- Edit --}}
+            <button 
                     onclick="openEditModal({{ $task->id }})" 
                     class="bg-white/50 text-gray-700 p-1.5 rounded-lg hover:bg-white transition shadow-sm pointer-events-auto" 
-                    title="Edit">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                </button>
+                title="{{ __('task.edit_button') }}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+            </button>
 
-                {{-- Complete/Uncomplete --}}
+            {{-- Focus Button --}}
+            @if(!$task->is_completed)
                 <button 
-                    onclick="toggleComplete({{ $task->id }})" 
-                    class="bg-white/50 text-gray-700 p-1.5 rounded-lg hover:bg-white transition shadow-sm completeTaskBtn pointer-events-auto" 
-                    title="{{ $task->is_completed ? 'Mark as pending' : 'Mark as done' }}">
+                    type="button"
+                    onclick="openPomodoro({{ $task->id }})"
+                    class="bg-white/50 text-gray-700 p-1.5 rounded-lg hover:bg-white transition shadow-sm pointer-events-auto focusTaskBtn" 
+                    title="{{ __('task.start_focus') }}">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </button>
+            @endif
 
-                {{-- Delete --}}
-                <x-task.actions :taskId="$task->id" />
-            </div>
+            {{-- Delete --}}
+            <x-task.actions :taskId="$task->id" />
+        </div>
         @endauth
     </div>
 </div>

@@ -36,7 +36,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
                 
-                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-1">Focus Mode! Go 🚀</h3>
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-1">{{ __('task.focus_mode') }}</h3>
                 
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 truncate px-4 font-medium" x-text="taskName"></p>
 
@@ -51,7 +51,7 @@
                     
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
                         <div class="text-5xl font-mono font-bold text-gray-800 dark:text-white tracking-tighter" x-text="formattedTime"></div>
-                        <div class="text-xs font-semibold uppercase tracking-widest text-orange-500 mt-2" x-text="isRunning ? 'FOCUSING' : 'READY'"></div>
+                        <div class="text-xs font-semibold uppercase tracking-widest text-orange-500 mt-2" x-text="isRunning ? @js(__('task.focusing')) : @js(__('task.ready'))"></div>
                     </div>
                 </div>
 
@@ -60,7 +60,7 @@
                         <button @click="adjustTime(-5)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200">-5</button>
                         <div class="flex items-baseline gap-1">
                             <input type="number" x-model.number="inputMinutes" @input="updateTimeFromInput()" class="w-12 text-center text-xl font-bold bg-transparent border-b border-gray-300 focus:outline-none focus:border-orange-500 dark:text-white p-0">
-                            <span class="text-sm text-gray-400">min</span>
+                            <span class="text-sm text-gray-400">{{ __('task.min') }}</span>
                         </div>
                         <button @click="adjustTime(5)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200">+5</button>
                     </div>
@@ -70,7 +70,7 @@
                     <button @click="toggleTimer()" 
                             class="px-8 py-3 rounded-2xl text-white font-bold shadow-lg transition transform active:scale-95 flex items-center gap-2"
                             :class="isRunning ? 'bg-pink-400 hover:bg-pink-500' : 'bg-pink-500 hover:bg-pink-600 text-white text-sm sm:text-base font-semibold shadow-sm hover:shadow-md'">
-                        <span x-text="isRunning ? '⏸ Pause' : '▶ Start Focus'"></span>
+                        <span x-text="isRunning ? '⏸ ' + @js(__('task.pause')) : '▶ ' + @js(__('task.start_focus'))"></span>
                     </button>
                     
                     <button @click="resetTimer()" x-show="timeLeft !== totalTime" 
@@ -83,25 +83,33 @@
 
         <div id="dateSelectModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#4A403A]/60 backdrop-blur-sm transition-opacity p-3 sm:p-4">
             <div class="bg-[#FAF7F2] dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 w-full max-w-sm smooth-shadow border-2 sm:border-4 border-white dark:border-slate-700">
-                <h3 class="text-lg sm:text-xl font-serif font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-white text-center">Jump to Date</h3>
+                <h3 class="text-lg sm:text-xl font-serif font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-white text-center">{{ __('task.jump_to_date') }}</h3>
                 <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Month</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.month') }}</label>
                         <select id="selectMonth" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl outline-none dark:text-white text-sm sm:text-base">
-                            <option value="0">January</option> <option value="1">February</option> <option value="2">March</option>
-                            <option value="3">April</option> <option value="4">May</option> <option value="5">June</option>
-                            <option value="6">July</option> <option value="7">August</option> <option value="8">September</option>
-                            <option value="9">October</option> <option value="10">November</option> <option value="11">December</option>
+                            <option value="0">{{ __('calendar.january') }}</option>
+                            <option value="1">{{ __('calendar.february') }}</option>
+                            <option value="2">{{ __('calendar.march') }}</option>
+                            <option value="3">{{ __('calendar.april') }}</option>
+                            <option value="4">{{ __('calendar.may') }}</option>
+                            <option value="5">{{ __('calendar.june') }}</option>
+                            <option value="6">{{ __('calendar.july') }}</option>
+                            <option value="7">{{ __('calendar.august') }}</option>
+                            <option value="8">{{ __('calendar.september') }}</option>
+                            <option value="9">{{ __('calendar.october') }}</option>
+                            <option value="10">{{ __('calendar.november') }}</option>
+                            <option value="11">{{ __('calendar.december') }}</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Year</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.year') }}</label>
                         <input id="inputYear" type="number" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl outline-none dark:text-white text-sm sm:text-base" placeholder="{{ date('Y') }}">
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
-                    <button id="btnCloseDateModal" class="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition text-sm sm:text-base">Cancel</button>
-                    <button id="btnApplyDate" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-pink-500 text-white hover:bg-pink-600 shadow-md font-bold transition text-sm sm:text-base">Go</button>
+                    <button id="btnCloseDateModal" class="w-full sm:w-auto px-4 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition text-sm sm:text-base">{{ __('task.cancel') }}</button>
+                    <button id="btnApplyDate" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-pink-500 text-white hover:bg-pink-600 shadow-md font-bold transition text-sm sm:text-base">{{ __('task.go') }}</button>
                 </div>
             </div>
         </div>
@@ -113,21 +121,35 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </div>
-                <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Task?</h3>
-                <p class="text-gray-500 dark:text-gray-400 mb-4 sm:mb-6 text-xs sm:text-sm px-2">Are you sure you want to delete this task? This action cannot be undone.</p>    
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">{{ __('task.delete_task_confirm') }}</h3>
+                <p class="text-gray-500 dark:text-gray-400 mb-4 sm:mb-6 text-xs sm:text-sm px-2">{{ __('task.delete_task_message') }}</p>    
                 <div class="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
-                    <button id="btnCancelDelete" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium transition text-sm sm:text-base">Cancel</button>
-                    <button id="btnConfirmDelete" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-500 text-white hover:bg-red-600 font-bold shadow-lg transition text-sm sm:text-base">Delete</button>
+                    <button id="btnCancelDelete" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium transition text-sm sm:text-base">{{ __('task.cancel') }}</button>
+                    <button id="btnConfirmDelete" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-500 text-white hover:bg-red-600 font-bold shadow-lg transition text-sm sm:text-base">{{ __('task.delete') }}</button>
                 </div>
             </div>
         </div>
 
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('pomodoroLogic', () => ({
+        // Translations for user layout
+        const userLayoutTranslations = {
+            timesUp: @json(__('task.times_up')),
+            markAsCompleted: @json(__('task.mark_as_completed')),
+            markAsDone: @json(__('task.mark_as_done')),
+            markAsPending: @json(__('task.mark_as_pending')),
+            failedToUpdate: @json(__('errors.failed_to_save_task')),
+            tryAgain: @json(__('errors.check_console')),
+            taskId: @json(__('task.task_id')),
+            unknownTask: @json(__('task.unknown_task'))
+        };
+        
+        // Register Pomodoro component BEFORE Alpine starts
+        // This must run immediately, not in DOMContentLoaded
+        if (window.Alpine) {
+            window.Alpine.data('pomodoroLogic', () => ({
                 isOpen: false,
                 taskId: null,
-                taskName: 'Unknown Task',
+                taskName: @json(__('task.unknown_task')),
                 inputMinutes: 25,
                 totalTime: 25 * 60,
                 timeLeft: 25 * 60,
@@ -151,7 +173,7 @@
                     const task = window.tasks.find(x => x.id === parseInt(id));
                     
                     this.taskId = id;
-                    this.taskName = task ? task.title : 'Task ID: ' + id;
+                    this.taskName = task ? task.title : userLayoutTranslations.taskId.replace(':id', id);
                     this.inputMinutes = 25; // Reset về mặc định
                     this.updateTimeFromInput();
                     this.isOpen = true;
@@ -214,7 +236,7 @@
                     
                     // Logic xác nhận hoàn thành (giữ nguyên logic cũ của bạn)
                     setTimeout(() => {
-                        if (confirm("Time's up! 🎉\nMark task as Completed?")) {
+                        if (confirm(userLayoutTranslations.timesUp + '\n' + userLayoutTranslations.markAsCompleted)) {
                             if (typeof window.toggleComplete !== 'undefined') {
                                 window.toggleComplete(this.taskId);
                             }
@@ -237,7 +259,7 @@
                     setTimeout(() => osc.stop(), 500);
                 }
             }));
-        });
+        }
     </script>
 
     <script>
@@ -269,6 +291,14 @@
                 const title = card.querySelector('h4');
                 const desc = card.querySelector('p');
                 const completeBtn = card.querySelector('.completeTaskBtn');
+                const focusBtn = card.querySelector('.focusTaskBtn');
+                
+                // Update card background opacity when completed
+                if (t.is_completed) {
+                    card.style.opacity = '0.6';
+                } else {
+                    card.style.opacity = '1';
+                }
                 
                 if (title) {
                     if (t.is_completed) {
@@ -288,16 +318,15 @@
                 
                 // Update button title
                 if (completeBtn) {
-                    completeBtn.setAttribute('title', t.is_completed ? 'Mark as pending' : 'Mark as done');
+                    completeBtn.setAttribute('title', t.is_completed ? userLayoutTranslations.markAsPending : userLayoutTranslations.markAsDone);
                 }
                 
                 // Hide/show focus button
-                const focusBtn = card.querySelector('button[onclick*="openPomodoro"]');
                 if (focusBtn) {
                     if (t.is_completed) {
                         focusBtn.style.display = 'none';
                     } else {
-                        focusBtn.style.display = 'block';
+                        focusBtn.style.display = 'inline-flex';
                     }
                 }
             }
@@ -341,7 +370,14 @@
                     const title = card.querySelector('h4');
                     const desc = card.querySelector('p');
                     const completeBtn = card.querySelector('.completeTaskBtn');
-                    const focusBtn = card.querySelector('button[onclick*="openPomodoro"]');
+                    const focusBtn = card.querySelector('.focusTaskBtn');
+                    
+                    // Rollback card background opacity
+                    if (wasCompleted) {
+                        card.style.opacity = '0.6';
+                    } else {
+                        card.style.opacity = '1';
+                    }
                     
                     if (title) {
                         if (wasCompleted) {
@@ -360,20 +396,20 @@
                     }
                     
                     if (completeBtn) {
-                        completeBtn.setAttribute('title', wasCompleted ? 'Mark as pending' : 'Mark as done');
+                        completeBtn.setAttribute('title', wasCompleted ? userLayoutTranslations.markAsPending : userLayoutTranslations.markAsDone);
                     }
                     
                     if (focusBtn) {
                         if (wasCompleted) {
                             focusBtn.style.display = 'none';
                         } else {
-                            focusBtn.style.display = 'block';
+                            focusBtn.style.display = 'inline-flex';
                         }
                     }
                 }
                 
                 console.error('Failed to toggle task:', error);
-                alert('Failed to update task. Please try again.');
+                alert(userLayoutTranslations.failedToUpdate + '. ' + userLayoutTranslations.tryAgain);
             }
         }
 

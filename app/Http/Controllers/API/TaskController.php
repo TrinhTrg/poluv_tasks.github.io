@@ -59,7 +59,12 @@ class TaskController extends Controller
             ->latest('id');
 
         // Kèm theo thông tin Category (để hiển thị màu sắc, tên danh mục trên thẻ Task)
-        return $query->with('category')->simplePaginate(10);
+        $perPage = request('per_page', 10);
+        if ($perPage >= 1000) {
+            // Return all tasks if per_page is very large
+            return $query->with('category')->get();
+        }
+        return $query->with('category')->simplePaginate($perPage);
     }
     /**
      * Store a newly created resource in storage.

@@ -69,8 +69,8 @@ class CategoryDropdown extends Component
                               ->orWhere('user_id', 1);
                     });
                 })
-                ->orderBy('name', 'asc')
-                ->get();
+            ->orderBy('name', 'asc')
+            ->get();
         }
         
         // Đảm bảo category có giá trị mặc định

@@ -1,15 +1,16 @@
 <div 
+    wire:ignore
     x-data="{ 
         open: false, 
         selected: @entangle('sort').live,
         getButtonLabel() {
             const labels = {
-                'newest': 'Newest',
-                'high': 'High',
-                'medium': 'Medium',
-                'low': 'Low'
+                'low': @js(__('priority.low')),
+                'medium': @js(__('priority.medium')),
+                'high': @js(__('priority.high')),
+                'newest': @js(__('priority.newest'))    
             };
-            return labels[this.selected] || 'Newest';
+            return labels[this.selected] || @js(__('priority.newest'));
         }
     }" 
     class="relative"
@@ -52,28 +53,28 @@
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'newest' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                Newest
+                {{ __('priority.newest') }}
             </li>
             <li 
                 @click="selected = 'high'; open = false" 
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'high' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                High
+                {{ __('priority.high') }}
             </li>
             <li 
                 @click="selected = 'medium'; open = false" 
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'medium' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                Medium
+                {{ __('priority.medium') }}
             </li>
             <li 
                 @click="selected = 'low'; open = false" 
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'low' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                Low
+                {{ __('priority.low') }}
             </li>
         </ul>
     </div>

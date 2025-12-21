@@ -20,20 +20,20 @@
                     {{-- Content --}}
                     <div class="text-center lg:text-left space-y-6 sm:space-y-8">
                         <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-gray-900 dark:text-white leading-tight">
-                            Experience the Art of Focus.
+                            {{__('homepage.experience_the_art_of_focus')}}
                         </h1>
                         <p class="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto lg:mx-0">
-                            Simple, elegant, and powerful task management for everyone.
+                            {{__('homepage.simple_elegant_and_powerful_task_management_for_everyone')}}
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <a href="#features" class="inline-flex items-center justify-center px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                                Khám Phá Ngay
+                                {{__('homepage.discover_now')}}
                                 <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </a>
                             <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-slate-600 hover:border-pink-500 dark:hover:border-pink-500 text-gray-900 dark:text-white font-semibold rounded-xl transition-all duration-300">
-                                Get Started
+                                {{__('homepage.get_started')}}
                             </a>
                         </div>
                     </div>
@@ -46,10 +46,10 @@
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300">
-                                            💼 Work
+                                            {{__('category.work')}}
                                 </span>
                                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
-                                            High
+                                            {{__('priority.high')}}
                             </span>
                                     </div>
                                     <div class="w-8 h-8 rounded-full bg-pink-200 dark:bg-pink-900/50 flex items-center justify-center">
@@ -58,11 +58,11 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Complete Project Proposal</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Finish writing the project proposal document and submit to client</p>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{__('task.complete_project_proposal')}}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{__('task.finish_writing_the_project_proposal_document_and_submit_to_client')}}</p>
                                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <span>📅 Today, 5:00 PM</span>
-                                    <span class="px-2 py-1 bg-gray-100 dark:bg-slate-700 rounded-lg">In Progress</span>
+                                    <span>{{__('task.today_5_00_pm')}}</span>
+                                    <span class="px-2 py-1 bg-gray-100 dark:bg-slate-700 rounded-lg">{{__('task.in_progress')}}</span>
                                 </div>
                             </div>
                             
@@ -80,10 +80,10 @@
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16 sm:mb-20">
                     <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-4">
-                        How It Works
+                        {{__('homepage.how_it_works')}}
                     </h2>
                     <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        Powerful features designed to help you stay organized and focused
+                        {{__('homepage.powerful_features_designed_to_help_you_stay_organized_and_focused')}}
                     </p>
                 </div>
 
@@ -92,32 +92,32 @@
                     <div class="order-2 lg:order-1">
                         <div class="space-y-6">
                             <div class="inline-block px-4 py-2 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-sm font-semibold">
-                                Smart Organization
+                                {{__('homepage.smart_organization')}}
                             </div>
                             <h3 class="text-3xl sm:text-4xl font-serif font-bold text-gray-900 dark:text-white">
-                                Smart Priority System
+                                {{__('homepage.smart_priority_system')}}
                             </h3>
                             <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                                Organize your tasks with our intelligent priority system. Set tasks as <strong class="text-red-600 dark:text-red-400">High</strong>, <strong class="text-blue-600 dark:text-blue-400">Medium</strong>, or <strong class="text-gray-600 dark:text-gray-400">Low</strong> priority to focus on what matters most. Our system helps you sort and filter tasks effortlessly, ensuring you never miss important deadlines.
+                                {!! __('homepage.organize_your_tasks_with_our_intelligent_priority_system') !!}
                             </p>
                             <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Visual priority indicators for quick recognition</span>
+                                    <span>{{__('homepage.visual_priority_indicators_for_quick_recognition')}}</span>
                                 </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Filter and sort by priority level</span>
+                                    <span>{{__('homepage.filter_and_sort_by_priority_level')}}</span>
                         </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Automatic sorting by importance</span>
+                                    <span>{{__('homepage.automatic_sorting_by_importance')}}</span>
                         </li>
                     </ul>
                         </div>
@@ -141,32 +141,32 @@
                     <div>
                         <div class="space-y-6">
                             <div class="inline-block px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold">
-                                Productivity Boost
+                                {{__('homepage.productivity_boost')}}
                             </div>
                             <h3 class="text-3xl sm:text-4xl font-serif font-bold text-gray-900 dark:text-white">
-                                Focus Mode with Pomodoro Timer
+                                {{__('homepage.focus_mode_with_pomodoro_timer')}}
                             </h3>
                             <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                                Stay focused and productive with our built-in Pomodoro timer. Start a focused work session directly from any task, customize your timer duration, and track your productivity. The timer helps you maintain deep focus while taking regular breaks to recharge.
+                                {{__('homepage.stay_focused_and_productive_with_our_built_in_pomodoro_timer')}}
                             </p>
                             <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Customizable timer duration (default 25 minutes)</span>
+                                    <span>{{__('homepage.customizable_timer_duration_default_25_minutes')}}</span>
                                 </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Pause and resume functionality</span>
+                                    <span>{{__('homepage.pause_and_resume_functionality')}}</span>
                                 </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-indigo-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Automatic completion suggestion after timer ends</span>
+                                    <span>{{__('homepage.automatic_completion_suggestion_after_timer_ends')}}</span>
                         </li>
                     </ul>
                         </div>
@@ -178,32 +178,32 @@
                     <div class="order-2 lg:order-1">
                         <div class="space-y-6">
                             <div class="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-semibold">
-                                Visual Organization
+                                {{__('homepage.visual_organization')}}
                             </div>
                             <h3 class="text-3xl sm:text-4xl font-serif font-bold text-gray-900 dark:text-white">
-                                Color Tags & Categories
+                                {{__('homepage.color_tags_and_categories')}}
                             </h3>
                             <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                                Organize your tasks visually with custom color tags and predefined categories. Choose from categories like <strong>Work</strong>, <strong>Homework</strong>, <strong>Personal</strong>, <strong>Meeting</strong>, and <strong>Other</strong>, or create your own. Each task can have its own pastel color tag for easy visual identification.
+                                {!! __('homepage.organize_your_tasks_visually_with_custom_color_tags_and_predefined_categories') !!}
                             </p>
                             <ul class="space-y-3 text-gray-700 dark:text-gray-300">
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>6 beautiful pastel color options</span>
+                                    <span>{{__('homepage.6_beautiful_pastel_color_options')}}</span>
                                 </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
-                                    <span>Predefined categories with icons</span>
+                                    <span>{{__('homepage.predefined_categories_with_icons')}}</span>
                                 </li>
                                 <li class="flex items-start gap-3">
                                     <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                                    <span>Filter tasks by category instantly</span>
+                                    <span>{{__('homepage.filter_tasks_by_category_instantly')}}</span>
                                 </li>
                             </ul>
                         </div>
@@ -218,7 +218,7 @@
                 {{-- Button Tiếp --}}
                         <div class="flex justify-start pt-8">
                             <a href="#about" class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-slate-600 hover:border-pink-500 dark:hover:border-pink-500 text-gray-900 dark:text-white font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                                <span>Tiếp</span>
+                                <span>{{__('homepage.next')}}</span>
                                 <svg class="w-5 h-5 transform group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -242,24 +242,24 @@
                     {{-- Right: Content --}}
                     <div class="space-y-6">
                         <div class="inline-block px-4 py-2 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-sm font-semibold">
-                            Our Story
+                            {{__('homepage.our_story')}}
                         </div>
                         <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white">
-                            We are PoLuv Tasks.
+                            {{__('homepage.we_are_poluv_tasks')}}
                         </h2>
                         <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                            At PoLuv Tasks, we believe that productivity should be peaceful, not stressful. Our mission is to help you find peace in productivity by providing a simple, elegant, and powerful task management solution.
+                            {{__('homepage.at_poluv_tasks_we_believe_that_productivity_should_be_peaceful_not_stressful')}}
                         </p>
                         <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                            We understand that managing tasks can be overwhelming, which is why we've designed PoLuv Tasks with a focus on simplicity and user experience. Whether you're a student juggling assignments, a professional managing projects, or someone just trying to stay organized, PoLuv Tasks is here to help you achieve your goals with ease.
+                            {{__('homepage.we_understand_that_managing_tasks_can_be_overwhelming_which_is_why_weve_designed_poluv_tasks_with_a_focus_on_simplicity_and_user_experience')}}
                         </p>
                         <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                            Join thousands of users who have discovered the art of focused productivity. Start your journey today and experience the difference that thoughtful design can make.
+                            {{__('homepage.join_thousands_of_users_who_have_discovered_the_art_of_focused_productivity_start_your_journey_today_and_experience_the_difference_that_thoughtful_design_can_make')}}
                         </p>
                         {{-- Button Tiếp --}}
                         <div class="flex justify-start pt-8">
                             <a href="#contact" class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-slate-600 hover:border-pink-500 dark:hover:border-pink-500 text-gray-900 dark:text-white font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                                <span>Tiếp</span>
+                                <span>{{__('homepage.next')}}</span>
                                 <svg class="w-5 h-5 transform group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -275,10 +275,10 @@
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16 sm:mb-20">
                     <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-gray-900 dark:text-white mb-4">
-                        Get in Touch
+                        {{__('homepage.get_in_touch')}}
                     </h2>
                     <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        We'd love to hear from you. Send us a message or feedback!
+                        {{__('homepage.we_d_love_to_hear_from_you_send_us_a_message_or_feedback')}}
                     </p>
                 </div>
 
@@ -287,10 +287,10 @@
                     <div class="space-y-8">
                         <div>
                             <h3 class="text-2xl font-serif font-bold text-gray-900 dark:text-white mb-6">
-                                Contact Information
+                                {{__('homepage.contact_information')}}
                             </h3>
                             <p class="text-gray-600 dark:text-gray-400 mb-8">
-                                Have questions or suggestions? Reach out to us through our social media channels or send us feedback using the form.
+                                {{__('homepage.have_questions_or_suggestions_reach_out_to_us_through_our_social_media_channels_or_send_us_feedback_using_the_form')}}
                             </p>
                         </div>
 
@@ -315,8 +315,8 @@
 
                         <div class="pt-8 border-t border-gray-200 dark:border-slate-700">
                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                <strong class="text-gray-900 dark:text-white">Email:</strong> contact@poluvtasks.com<br>
-                                <strong class="text-gray-900 dark:text-white">Support:</strong> support@poluvtasks.com
+                                <strong class="text-gray-900 dark:text-white">{{__('homepage.email')}}:</strong> contact@poluvtasks.com<br>
+                                <strong class="text-gray-900 dark:text-white">{{__('homepage.support')}}:</strong> support@poluvtasks.com
                             </p>
                         </div>
                     </div>
@@ -326,7 +326,7 @@
                         <form id="feedbackForm" class="space-y-6">
                             <div>
                                 <label for="feedbackEmail" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Your Email
+                                    {{__('homepage.your_email')}}
                                 </label>
                                 <input 
                                     type="email" 
@@ -339,7 +339,7 @@
                             </div>
                             <div>
                                 <label for="feedbackMessage" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Your Feedback / Suggestion
+                                    {{__('homepage.your_feedback_suggestion')}}
                                 </label>
                                 <textarea 
                                     id="feedbackMessage" 
@@ -347,14 +347,14 @@
                                     rows="6" 
                                     required
                                     class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white focus:border-pink-500 dark:focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition resize-none"
-                                    placeholder="Tell us what you think or share your suggestions..."
+                                    placeholder="{{__('homepage.tell_us_what_you_think_or_share_your_suggestions')}}"
                                 ></textarea>
                             </div>
                             <button 
                                 type="submit" 
                                 class="w-full px-6 py-3 bg-black dark:bg-white text-white dark:text-gray-900 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                             >
-                                Send Feedback
+                                {{__('homepage.send_feedback')}}
                             </button>
                         </form>
                     </div>
@@ -397,7 +397,7 @@
         
         // Here you can add API call to send feedback
         // For now, just show an alert
-        alert('Thank you for your feedback! We\'ll get back to you soon.');
+        alert('{{__('homepage.thank_you_for_your_feedback_we_ll_get_back_to_you_soon')}}');
         this.reset();
     });
 

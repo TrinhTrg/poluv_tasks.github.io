@@ -8,7 +8,7 @@
         type="text" 
         wire:model.live.debounce.300ms="search"
         wire:keydown.enter="performSearch"
-        placeholder="Search..." 
+        placeholder="{{ __('common.search_placeholder') }}" 
         class="w-full pl-9 sm:pl-10 pr-20 sm:pr-24 py-2 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 text-sm bg-white dark:bg-slate-700 dark:text-white transition outline-none" 
     />
     <div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-2">
@@ -17,7 +17,7 @@
                 type="button"
                 wire:click="clearSearch"
                 class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-slate-600 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
-                title="Clear search"
+                title="{{ __('common.clear_search') }}"
             >
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -28,7 +28,7 @@
             type="button"
             wire:click="performSearch"
             class="p-1.5 rounded-lg bg-pink-500 hover:bg-pink-600 text-white transition shadow-sm hover:shadow-md"
-            title="Search"
+            title="{{ __('common.search') }}"
         >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -150,20 +150,26 @@
         });
         
         // Show/hide empty state for search
-        if (visibleCount === 0) {
-            // Check if empty state already exists
-            const existingEmptyState = taskList.querySelector('.col-span-1.md\\:col-span-2');
-            if (!existingEmptyState || !existingEmptyState.textContent.includes('Try different keywords')) {
-                if (existingEmptyState) existingEmptyState.remove();
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10';
-                emptyDiv.innerHTML = `
-                    <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🔍</div>
-                    <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found</h3>
-                    <p class="text-xs sm:text-sm text-gray-400">Try different keywords or clear your search</p>
-                `;
-                taskList.appendChild(emptyDiv);
+        // Remove ALL existing empty states first to avoid duplicates
+        const allEmptyStates = taskList.querySelectorAll('.col-span-1.md\\:col-span-2.empty-state, .col-span-1.md\\:col-span-2:not([data-task-id])');
+        allEmptyStates.forEach(state => {
+            // Only remove JavaScript-created empty states (not server-rendered ones)
+            if (state.textContent.includes('Try different keywords') || 
+                state.textContent.includes('Try adjusting your filters') ||
+                state.textContent.includes('No tasks found')) {
+                state.remove();
             }
+        });
+        
+        if (visibleCount === 0) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10 empty-state';
+            emptyDiv.innerHTML = `
+                <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🔍</div>
+                <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">${window.translations?.noTasksFound || 'No tasks found'}</h3>
+                <p class="text-xs sm:text-sm text-gray-400">Try different keywords or clear your search</p>
+            `;
+            taskList.appendChild(emptyDiv);
         }
     }
     

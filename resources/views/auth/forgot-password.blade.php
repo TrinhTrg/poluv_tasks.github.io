@@ -8,7 +8,7 @@
            type="button"
            onclick="window.history.back();"
            class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-pink-300"
-           title="Go back">
+           title="{{ __('profile.go_back') }}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -19,8 +19,8 @@
         </div>
         
         <div class="text-center mb-8">
-            <h2 class="text-3xl font-serif text-gray-900 dark:text-white font-bold">Forgot Password?</h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">Enter your email address and we'll send you a verification code.</p>
+            <h2 class="text-3xl font-serif text-gray-900 dark:text-white font-bold">{{ __('auth.forgot_password') }}</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">{{ __('auth.enter_email_address_verification_code') }}</p>
         </div>
 
         @if(session('success'))
@@ -34,21 +34,21 @@
             
             {{-- Email --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.email_address') }}</label>
                 <input type="email" name="email" value="{{ old('email') }}" required 
                     class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white"
-                    placeholder="Enter your email">
+                    placeholder="{{ __('auth.enter_your_email') }}">
                 @error('email') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <button type="submit" class="w-full bg-pink-500 text-white py-3.5 rounded-xl font-bold hover:bg-pink-600 transition shadow-lg transform hover:-translate-y-0.5">
-                Send Verification Code
+                {{ __('auth.send_verification_code') }}
             </button>
         </form>
 
         <p class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-            Remember your password? 
-            <a href="{{ route('login') }}" class="font-bold text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-500">Sign in</a>
+            {{ __('auth.remember_your_password') }} 
+            <a href="{{ route('login') }}" class="font-bold text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-500">{{ __('auth.sign_in') }}</a>
         </p>
     </div>
 </div>
