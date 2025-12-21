@@ -41,7 +41,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // Profile routes (only for authenticated users)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update'); 
 });
 
 // Language switching route
