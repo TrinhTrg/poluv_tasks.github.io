@@ -1,4 +1,6 @@
 # PoLuv Tasks
+<img width="1906" height="863" alt="image" src="https://github.com/user-attachments/assets/a7b1897a-9011-4dbd-8ca9-673acc4a9886" />
+<img width="1901" height="863" alt="image" src="https://github.com/user-attachments/assets/b3bb60d5-8328-4354-a687-b7e1fb292966" />
 
 ## View HTML Prototype
 
@@ -289,7 +291,7 @@ This project is open-sourced software licensed under the MIT license.
 
 Here is video demo:
 
-[]
+[https://drive.google.com/file/d/1PN8woXC4GmS8iec9DAMltMPLcu1GUoAI/view?usp=sharing]
 
 ---
 
