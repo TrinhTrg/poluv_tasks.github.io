@@ -17,6 +17,9 @@ class EventServiceProvider extends ServiceProvider
         TaskDue::class => [
             SendTaskDueNotification::class,
         ],
+        \Illuminate\Database\Events\QueryExecuted::class => [
+            \App\Listeners\SlowQueryDetected::class,
+        ],
     ];
 
     /**
