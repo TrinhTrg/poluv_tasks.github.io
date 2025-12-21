@@ -1,5 +1,28 @@
 # PoLuv Tasks
 
+## View HTML Prototype
+
+To view the HTML prototype design:
+
+1. Navigate to the prototype directory:
+```bash
+cd prototype-test-UI
+```
+
+2. Open `index.html` in your web browser:
+   - **Option 1**: Double-click `index.html` file
+   - **Option 2**: Right-click `index.html` → "Open with" → Choose your browser
+   - **Option 3**: Use a local server (recommended):
+   ```bash
+   # Using Python (if installed)
+   python -m http.server 8001
+   
+   # Using PHP (if installed)
+   php -S localhost:8001
+   ```
+   Then open `http://localhost:8001` in your browser
+
+**Note**: The prototype is a static HTML file showing the UI design mockup before implementation.
 
 # Overview
 
