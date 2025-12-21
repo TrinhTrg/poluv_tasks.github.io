@@ -11,7 +11,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Đăng ký Slack Notification Service
+        $this->app->singleton('slack.notification', function ($app) {
+            return new \App\Services\SlackNotificationService();
+        });
     }
 
     /**

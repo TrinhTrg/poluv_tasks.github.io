@@ -55,4 +55,3 @@ Route::post('/language/switch', function (\Illuminate\Http\Request $request) {
     
     return redirect()->back();
 })->name('language.switch');
-
