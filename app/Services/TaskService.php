@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class TaskService
 {
@@ -20,44 +21,52 @@ class TaskService
     {
         $userId = $userId ?? $this->getUserId();
         
-        $query = Task::query()
-            ->with('category')
-            ->when($userId !== null, function ($q) use ($userId) {
-                return $q->where('user_id', $userId);
-            }, function ($q) {
-                // Guest mode: tasks with null user_id or user_id = 1
-                return $q->where(function ($query) {
-                    $query->whereNull('user_id')
-                        ->orWhere('user_id', 1);
-                });
-            })
-            ->when($filters['search'] ?? null, function ($q, $search) {
-                return $q->where(function ($query) use ($search) {
-                    $query->where('title', 'like', '%' . $search . '%')
-                        ->orWhere('description', 'like', '%' . $search . '%');
-                });
-            })
-            ->when($filters['category_id'] ?? null, function ($q, $categoryId) {
-                return $q->where('category_id', $categoryId);
-            })
-            ->when($filters['status'] ?? null, function ($q, $status) {
-                if ($status === 'completed') {
-                    return $q->where('is_completed', true);
-                }
-                if ($status === 'pending') {
-                    return $q->where('is_completed', false);
-                }
-                return $q;
-            })
-            ->latest('id');
-
-        $perPage = $filters['per_page'] ?? 10;
+        // Create cache key based on filters and user
+        $cacheKey = 'tasks:user:' . ($userId ?? 'guest') . ':' . md5(serialize($filters));
         
-        if ($perPage >= 1000) {
-            return $query->get();
-        }
+        // Cache for 60 seconds (only for read operations, not for authenticated users with frequent updates)
+        $cacheTtl = $userId ? 30 : 60; // Shorter cache for authenticated users
+        
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($filters, $userId) {
+            $query = Task::query()
+                ->with('category')
+                ->when($userId !== null, function ($q) use ($userId) {
+                    return $q->where('user_id', $userId);
+                }, function ($q) {
+                    // Guest mode: tasks with null user_id or user_id = 1
+                    return $q->where(function ($query) {
+                        $query->whereNull('user_id')
+                            ->orWhere('user_id', 1);
+                    });
+                })
+                ->when($filters['search'] ?? null, function ($q, $search) {
+                    return $q->where(function ($query) use ($search) {
+                        $query->where('title', 'like', '%' . $search . '%')
+                            ->orWhere('description', 'like', '%' . $search . '%');
+                    });
+                })
+                ->when($filters['category_id'] ?? null, function ($q, $categoryId) {
+                    return $q->where('category_id', $categoryId);
+                })
+                ->when($filters['status'] ?? null, function ($q, $status) {
+                    if ($status === 'completed') {
+                        return $q->where('is_completed', true);
+                    }
+                    if ($status === 'pending') {
+                        return $q->where('is_completed', false);
+                    }
+                    return $q;
+                })
+                ->latest('id');
 
-        return $query->simplePaginate($perPage);
+            $perPage = $filters['per_page'] ?? 10;
+            
+            if ($perPage >= 1000) {
+                return $query->get();
+            }
+
+            return $query->simplePaginate($perPage);
+        });
     }
 
     /**
@@ -116,6 +125,9 @@ class TaskService
             'has_notify' => $data['notify'] ?? false,
             'is_completed' => false,
         ]);
+
+        // Clear cache for this user's tasks
+        $this->clearUserTasksCache($userId);
 
         return $task->load('category');
     }
@@ -202,7 +214,15 @@ class TaskService
 
         $this->checkOwnership($task, $userId);
 
-        return $task->delete();
+        $userId = $task->user_id;
+        $deleted = $task->delete();
+
+        // Clear cache for this user's tasks
+        if ($deleted) {
+            $this->clearUserTasksCache($userId);
+        }
+
+        return $deleted;
     }
 
     /**
@@ -230,6 +250,9 @@ class TaskService
 
         $task->is_completed = !$task->is_completed;
         $task->save();
+
+        // Clear cache for this user's tasks
+        $this->clearUserTasksCache($task->user_id);
 
         return $task->load('category');
     }
@@ -307,6 +330,33 @@ class TaskService
     protected function getUserId(): ?int
     {
         return Auth::check() ? Auth::id() : null;
+    }
+
+    /**
+     * Clear cache for user's tasks
+     */
+    protected function clearUserTasksCache(?int $userId): void
+    {
+        $prefix = 'tasks:user:' . ($userId ?? 'guest');
+        
+        // Try to use cache tags if supported (Redis, Memcached)
+        try {
+            if (method_exists(Cache::getStore(), 'tags')) {
+                Cache::tags(['tasks', 'user:' . ($userId ?? 'guest')])->flush();
+                return;
+            }
+        } catch (\Exception $e) {
+            // Tags not supported, fall through to manual clearing
+        }
+        
+        // Manual cache invalidation: clear homepage cache as well since tasks are displayed there
+        Cache::forget('homepage:tasks:user:' . ($userId ?? 'guest'));
+        
+        // Clear categories cache as well since tasks depend on categories
+        Cache::forget('categories:user:' . ($userId ?? 'guest'));
+        
+        // For database/file cache, we let cache expire naturally
+        // In production with Redis, consider using cache tags or maintaining a list of cache keys
     }
 }
 

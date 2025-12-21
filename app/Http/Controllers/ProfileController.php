@@ -36,24 +36,25 @@ class ProfileController extends Controller
             $path = $request->file('profile_picture')->store('profile-pictures', 'public');
             $user->update(['profile_picture' => $path]);
 
-            return redirect()->route('profile.show')->with('success', 'Profile picture updated successfully!');
+            return redirect()->route('profile.show')->with('success', __('profile.profile_picture_updated_successfully'));
         }
 
         // Otherwise, validate all fields
         $validated = $request->validate([
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'username' => 'required|string|max:255|alpha_dash|unique:users,username,' . $user->id,
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email:rfc,dns|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'birthday' => 'nullable|date',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
         ], [
-            'username.required' => 'Username is required.',
-            'username.unique' => 'This username is already taken.',
-            'email.required' => 'Email is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.unique' => 'This email is already taken.',
+            'username.required' => __('profile.username_required'),
+            'username.alpha_dash' => __('profile.username_alpha_dash'),
+            'username.unique' => __('profile.username_unique'),
+            'email.required' => __('profile.email_required'),
+            'email.email' => __('profile.email_email'),
+            'email.unique' => __('profile.email_unique'),
         ]);
 
         // Update name from first_name and last_name
@@ -92,9 +93,9 @@ class ProfileController extends Controller
         $user->update($updateData);
 
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Profile updated successfully!']);
+            return response()->json(['success' => true, 'message' => __('profile.profile_updated_successfully')]);
         }
 
-        return redirect()->route('profile.show')->with('success', 'Profile updated successfully!');
+        return redirect()->route('profile.show')->with('success', __('profile.profile_updated_successfully'));
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -18,11 +19,21 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $categories = $this->categoryService->getCategories();
 
-        return response()->json($categories);
+        $response = response()->json($categories);
+        
+        // Set cache headers for API response (only for GET requests without auth)
+        if (!$request->user() && $request->isMethod('GET')) {
+            $response->headers->set('Cache-Control', 'public, max-age=60, must-revalidate');
+            // Add ETag for cache validation
+            $etag = md5($response->getContent());
+            $response->setEtag($etag);
+        }
+
+        return $response;
     }
 
     /**

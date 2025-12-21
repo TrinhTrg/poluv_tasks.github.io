@@ -115,12 +115,12 @@ class AuthController extends Controller
             ]
         );
 
-        // Gửi email với mã xác nhận
+        // Gửi email trực tiếp (không qua Job) để hiển thị trong Telescope
         $user->notify(new PasswordResetNotification($token));
 
         return redirect()->route('password.verify')->with('email', $request->email)->with('success', 'Mã xác nhận đã được gửi đến email của bạn!');
     }
-
+    
     // 8. Hiển thị form nhập mã xác nhận
     public function showVerifyCode()
     {

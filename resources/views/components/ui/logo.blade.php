@@ -6,11 +6,15 @@
     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
         <img src="{{ asset('poluv_light.png') }}"
              alt="PoLuv Logo Light"
-             class="w-full h-full object-cover block dark:hidden">
+             class="w-full h-full object-cover block dark:hidden"
+             loading="eager"
+             fetchpriority="high">
 
         <img src="{{ asset('poluv_dark.png') }}"
              alt="PoLuv Logo Dark"
-             class="w-full h-full object-cover hidden dark:block">
+             class="w-full h-full object-cover hidden dark:block"
+             loading="eager"
+             fetchpriority="high">
     </div>
 
     <div>

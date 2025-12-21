@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class TaskController extends Controller
 {
@@ -30,7 +31,17 @@ class TaskController extends Controller
 
         $tasks = $this->taskService->getTasks($filters);
 
-        return response()->json($tasks);
+        $response = response()->json($tasks);
+        
+        // Set cache headers for API response (only for GET requests without auth)
+        if (!$request->user() && $request->isMethod('GET')) {
+            $response->headers->set('Cache-Control', 'public, max-age=60, must-revalidate');
+            // Add ETag for cache validation
+            $etag = md5($response->getContent());
+            $response->setEtag($etag);
+        }
+
+        return $response;
     }
 
     /**

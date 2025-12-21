@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class HomepageController extends Controller
 {
@@ -15,10 +16,16 @@ class HomepageController extends Controller
     {
         // Guest không thể xem tasks của user khác - chỉ hiển thị landing page
         if (Auth::check()) {
-            $tasks = Task::with('category')
-                ->where('user_id', Auth::id())
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $userId = Auth::id();
+            $cacheKey = 'homepage:tasks:user:' . $userId;
+            
+            // Cache homepage tasks for 30 seconds (frequent updates expected)
+            $tasks = Cache::remember($cacheKey, 30, function () use ($userId) {
+                return Task::with('category')
+                    ->where('user_id', $userId)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            });
         } else {
             // Guest mode: không hiển thị tasks, chỉ hiển thị landing page
             $tasks = collect([]); // Empty collection

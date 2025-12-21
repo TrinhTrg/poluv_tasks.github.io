@@ -124,7 +124,7 @@
                     </div>
                     <div class="order-1 lg:order-2">
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop" alt="Smart Priority System" class="rounded-3xl shadow-2xl w-full h-auto" />
+                            <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop" alt="Smart Priority System" class="rounded-3xl shadow-2xl w-full h-auto" loading="lazy" decoding="async" />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-3xl"></div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-20 sm:mb-24">
                     <div>
                         <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop" alt="Focus Mode Pomodoro Timer" class="rounded-3xl shadow-2xl w-full h-auto" />
+                            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop" alt="Focus Mode Pomodoro Timer" class="rounded-3xl shadow-2xl w-full h-auto" loading="lazy" decoding="async" />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-3xl"></div>
                         </div>
                     </div>
@@ -234,7 +234,7 @@
                     {{-- Left: Image --}}
                     <div class="relative">
                         <div class="transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="PoLuv Tasks Team" class="rounded-3xl shadow-2xl w-full h-auto" />
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="PoLuv Tasks Team" class="rounded-3xl shadow-2xl w-full h-auto" loading="lazy" decoding="async" />
                         </div>
                         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-pink-200 dark:bg-pink-900/30 rounded-full blur-2xl opacity-50 -z-10"></div>
                     </div>
