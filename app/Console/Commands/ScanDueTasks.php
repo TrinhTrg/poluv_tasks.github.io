@@ -55,14 +55,23 @@ class ScanDueTasks extends Command
         $this->info("Found {$dueTasks->count()} task(s) due within 15 minutes.");
 
         $notifiedCount = 0;
+        $taskIds = [];
 
+        // Collect all task IDs first
+        foreach ($dueTasks as $task) {
+            $taskIds[] = $task->id;
+        }
+
+        // Bulk update is_notified to true for all tasks (optimized - single query)
+        if (!empty($taskIds)) {
+            Task::whereIn('id', $taskIds)->update(['is_notified' => true]);
+        }
+
+        // Dispatch events for each task
         foreach ($dueTasks as $task) {
             try {
                 // Dispatch the TaskDue event
                 event(new TaskDue($task));
-
-                // Update is_notified to true
-                $task->update(['is_notified' => true]);
 
                 $notifiedCount++;
                 $this->line("✓ Notified for task: {$task->title} (Due: {$task->due_at->format('Y-m-d H:i')})");

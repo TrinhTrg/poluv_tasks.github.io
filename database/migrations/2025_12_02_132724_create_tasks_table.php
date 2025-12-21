@@ -37,10 +37,27 @@ return new class extends Migration
             // Toggle thông báo (ON/OFF)
             $table->boolean('has_notify')->default(false);
             
+            // Notification status: đã gửi thông báo hay chưa
+            $table->boolean('is_notified')->default(false);
+            
             // Trạng thái hoàn thành
             $table->boolean('is_completed')->default(false);
 
             $table->timestamps();
+
+            // Indexes for frequently queried columns
+            $table->index('is_completed', 'tasks_is_completed_index');
+            $table->index('due_at', 'tasks_due_at_index');
+            $table->index('is_notified', 'tasks_is_notified_index');
+            $table->index('has_notify', 'tasks_has_notify_index');
+            
+            // Composite index for common query pattern: user_id + is_completed + due_at
+            // Used in: filtering by user, status, and sorting by due date
+            $table->index(['user_id', 'is_completed', 'due_at'], 'tasks_user_status_due_index');
+            
+            // Composite index for notification scanning: is_notified + is_completed + has_notify + due_at
+            // Used in: ScanDueTasks command
+            $table->index(['is_notified', 'is_completed', 'has_notify', 'due_at'], 'tasks_notification_scan_index');
         });
     }
 

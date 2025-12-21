@@ -21,52 +21,65 @@ class TaskService
     {
         $userId = $userId ?? $this->getUserId();
         
-        // Create cache key based on filters and user
-        $cacheKey = 'tasks:user:' . ($userId ?? 'guest') . ':' . md5(serialize($filters));
-        
-        // Cache for 60 seconds (only for read operations, not for authenticated users with frequent updates)
-        $cacheTtl = $userId ? 30 : 60; // Shorter cache for authenticated users
-        
-        return Cache::remember($cacheKey, $cacheTtl, function () use ($filters, $userId) {
-            $query = Task::query()
-                ->with('category')
-                ->when($userId !== null, function ($q) use ($userId) {
-                    return $q->where('user_id', $userId);
-                }, function ($q) {
-                    // Guest mode: tasks with null user_id or user_id = 1
-                    return $q->where(function ($query) {
-                        $query->whereNull('user_id')
-                            ->orWhere('user_id', 1);
-                    });
-                })
-                ->when($filters['search'] ?? null, function ($q, $search) {
-                    return $q->where(function ($query) use ($search) {
-                        $query->where('title', 'like', '%' . $search . '%')
-                            ->orWhere('description', 'like', '%' . $search . '%');
-                    });
-                })
-                ->when($filters['category_id'] ?? null, function ($q, $categoryId) {
-                    return $q->where('category_id', $categoryId);
-                })
-                ->when($filters['status'] ?? null, function ($q, $status) {
-                    if ($status === 'completed') {
-                        return $q->where('is_completed', true);
-                    }
-                    if ($status === 'pending') {
-                        return $q->where('is_completed', false);
-                    }
-                    return $q;
-                })
-                ->latest('id');
-
-            $perPage = $filters['per_page'] ?? 10;
+        // Don't cache for authenticated users - they need fresh data after create/update/delete
+        // Only cache for guest/unauthenticated requests
+        if ($userId === null) {
+            // Create cache key based on filters and user
+            $cacheKey = 'tasks:user:guest:' . md5(serialize($filters));
             
-            if ($perPage >= 1000) {
-                return $query->get();
-            }
+            // Cache for 60 seconds for guest users only
+            return Cache::remember($cacheKey, 60, function () use ($filters) {
+                return $this->fetchTasks($filters, null);
+            });
+        }
+        
+        // For authenticated users, always fetch fresh data (no cache)
+        return $this->fetchTasks($filters, $userId);
+    }
+    
+    /**
+     * Fetch tasks from database
+     */
+    protected function fetchTasks(array $filters, ?int $userId): Paginator|Collection
+    {
+        $query = Task::query()
+            ->with('category')
+            ->when($userId !== null, function ($q) use ($userId) {
+                return $q->where('user_id', $userId);
+            }, function ($q) {
+                // Guest mode: tasks with null user_id or user_id = 1
+                return $q->where(function ($query) {
+                    $query->whereNull('user_id')
+                        ->orWhere('user_id', 1);
+                });
+            })
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                return $q->where(function ($query) use ($search) {
+                    $query->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($filters['category_id'] ?? null, function ($q, $categoryId) {
+                return $q->where('category_id', $categoryId);
+            })
+            ->when($filters['status'] ?? null, function ($q, $status) {
+                if ($status === 'completed') {
+                    return $q->where('is_completed', true);
+                }
+                if ($status === 'pending') {
+                    return $q->where('is_completed', false);
+                }
+                return $q;
+            })
+            ->latest('id');
 
-            return $query->simplePaginate($perPage);
-        });
+        $perPage = $filters['per_page'] ?? 10;
+        
+        if ($perPage >= 1000) {
+            return $query->get();
+        }
+
+        return $query->simplePaginate($perPage);
     }
 
     /**
@@ -129,7 +142,10 @@ class TaskService
         // Clear cache for this user's tasks
         $this->clearUserTasksCache($userId);
 
-        return $task->load('category');
+        // Load category relationship for new task
+        $task->load('category');
+
+        return $task;
     }
 
     /**
@@ -147,7 +163,8 @@ class TaskService
             throw new UnauthorizedException('Please sign in to update tasks.');
         }
 
-        $task = Task::find($taskId);
+        // Eager load category to avoid N+1 query problem
+        $task = Task::with('category')->find($taskId);
         
         if (!$task) {
             throw new NotFoundException('Task not found.');
@@ -188,7 +205,13 @@ class TaskService
 
         $task->save();
 
-        return $task->load('category');
+        // Refresh category relationship if category_id changed
+        if (isset($data['category'])) {
+            // If category_id was changed, reload the relationship
+            $task->load('category');
+        }
+
+        return $task;
     }
 
     /**
@@ -240,7 +263,8 @@ class TaskService
             throw new UnauthorizedException('Please sign in to complete tasks.');
         }
 
-        $task = Task::find($taskId);
+        // Eager load category to avoid N+1 query problem
+        $task = Task::with('category')->find($taskId);
         
         if (!$task) {
             throw new NotFoundException('Task not found.');
@@ -254,7 +278,7 @@ class TaskService
         // Clear cache for this user's tasks
         $this->clearUserTasksCache($task->user_id);
 
-        return $task->load('category');
+        return $task;
     }
 
     /**

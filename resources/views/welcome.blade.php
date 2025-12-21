@@ -14,9 +14,12 @@
 
     <main class="bg-main text-gray-800 dark:bg-slate-900 dark:text-gray-100 antialiased font-sans transition-colors duration-300">
         {{-- Section 1: Hero Section (Full Height) --}}
-        <section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FAF7F2] to-white dark:from-slate-900 dark:to-slate-800 px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
-            <div class="max-w-7xl mx-auto w-full">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#FAF7F2] to-white dark:from-slate-900 dark:to-slate-800 px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 relative" style="background-image: url('{{ asset('background.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            {{-- Overlay for better text readability --}}
+            <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[0.5px]"></div>
+            <div class="relative z-10 w-full">
+                <div class="max-w-7xl mx-auto w-full">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     {{-- Content --}}
                     <div class="text-center lg:text-left space-y-6 sm:space-y-8">
                         <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-gray-900 dark:text-white leading-tight">
@@ -70,6 +73,7 @@
                             <div class="absolute -top-4 -right-4 w-24 h-24 bg-pink-200 dark:bg-pink-900/30 rounded-full blur-2xl opacity-50"></div>
                             <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-200 dark:bg-blue-900/30 rounded-full blur-2xl opacity-50"></div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
