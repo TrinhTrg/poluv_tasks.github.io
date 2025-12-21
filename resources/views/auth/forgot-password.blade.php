@@ -35,9 +35,14 @@
             {{-- Email --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.email_address') }}</label>
-                <input type="email" name="email" value="{{ old('email') }}" required 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white"
-                    placeholder="{{ __('auth.enter_your_email') }}">
+                <input type="email" 
+                       name="email" 
+                       id="email"
+                       value="{{ old('email') }}" 
+                       autocomplete="email"
+                       required 
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white"
+                       placeholder="{{ __('auth.enter_your_email') }}">
                 @error('email') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
             </div>
 

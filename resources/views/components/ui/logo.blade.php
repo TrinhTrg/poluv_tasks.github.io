@@ -7,14 +7,20 @@
         <img src="{{ asset('poluv_light.png') }}"
              alt="PoLuv Logo Light"
              class="w-full h-full object-cover block dark:hidden"
-             loading="eager"
-             fetchpriority="high">
+             loading="{{ request()->routeIs('register') || request()->routeIs('login') || request()->routeIs('password.*') ? 'lazy' : 'eager' }}"
+             fetchpriority="{{ request()->routeIs('register') || request()->routeIs('login') || request()->routeIs('password.*') ? 'low' : 'high' }}"
+             width="48"
+             height="48"
+             decoding="async">
 
         <img src="{{ asset('poluv_dark.png') }}"
              alt="PoLuv Logo Dark"
              class="w-full h-full object-cover hidden dark:block"
-             loading="eager"
-             fetchpriority="high">
+             loading="{{ request()->routeIs('register') || request()->routeIs('login') || request()->routeIs('password.*') ? 'lazy' : 'eager' }}"
+             fetchpriority="{{ request()->routeIs('register') || request()->routeIs('login') || request()->routeIs('password.*') ? 'low' : 'high' }}"
+             width="48"
+             height="48"
+             decoding="async">
     </div>
 
     <div>

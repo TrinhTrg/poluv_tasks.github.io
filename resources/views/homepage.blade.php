@@ -639,20 +639,42 @@
     }
             });
             
-            // Remove existing empty states
-            const existingEmptyStates = taskList.querySelectorAll('.col-span-1.md\\:col-span-2.empty-state');
-            existingEmptyStates.forEach(emptyState => emptyState.remove());
+            // Remove ALL existing empty states (both server-rendered and client-rendered)
+            // Match both: empty-state class, empty-state-server class, and elements with col-span that contain empty state text
+            const allEmptyStates = taskList.querySelectorAll('.col-span-1.md\\:col-span-2.empty-state, .col-span-1.md\\:col-span-2.empty-state-server, .col-span-1.md\\:col-span-2:not([data-task-id])');
+            allEmptyStates.forEach(emptyState => {
+                // Check if it's actually an empty state (contains the no tasks message or has h3)
+                const text = emptyState.textContent || '';
+                if (text.includes(window.translations.noTasksFound) || 
+                    text.includes('Không tìm thấy công việc') || 
+                    text.includes('No tasks found') ||
+                    emptyState.querySelector('h3') ||
+                    emptyState.classList.contains('empty-state-server')) {
+                    emptyState.remove();
+                }
+            });
             
-            // Show empty state if no tasks
+            // Show empty state if no tasks (only if we don't already have one)
             if (visibleCount === 0) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10 empty-state';
-                emptyDiv.innerHTML = `
-                    <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
-                    <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">${window.translations.noTasksFound}</h3>
-                    <p class="text-xs sm:text-sm text-gray-400">${window.translations.tryAdjustingFilters}</p>
-                `;
-                taskList.appendChild(emptyDiv);
+                // Check if empty state already exists
+                const hasEmptyState = Array.from(taskList.children).some(child => {
+                    const text = child.textContent || '';
+                    return (text.includes(window.translations.noTasksFound) || 
+                            text.includes('Không tìm thấy công việc') || 
+                            text.includes('No tasks found')) &&
+                           child.classList.contains('col-span-1');
+                });
+                
+                if (!hasEmptyState) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10 empty-state';
+                    emptyDiv.innerHTML = `
+                        <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
+                        <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">${window.translations.noTasksFound}</h3>
+                        <p class="text-xs sm:text-sm text-gray-400">${window.translations.tryAdjustingFilters}</p>
+                    `;
+                    taskList.appendChild(emptyDiv);
+                }
             }
         }
         window.renderTasks = renderTasks;
@@ -715,12 +737,7 @@
                         };
                     });
                     
-                    // Re-render tasks using the updated window.tasks
-                    if (typeof window.renderTasks === 'function') {
-                        window.renderTasks();
-                    }
-                    
-                    // Fetch fresh HTML from server for task cards
+                    // Fetch fresh HTML from server for task cards (server already handles empty state)
                     const htmlResponse = await fetch(window.location.href + '?_t=' + Date.now(), {
                         method: 'GET',
                         headers: {
@@ -738,12 +755,20 @@
                         const newTaskList = doc.getElementById('taskList');
                         
                         if (newTaskList) {
-                            // Replace task list HTML
+                            // Replace task list HTML (server already renders empty state if no tasks)
                             taskListContainer.innerHTML = newTaskList.innerHTML;
-                            // Re-render to apply filters
-                            if (typeof window.renderTasks === 'function') {
+                            
+                            // Only apply client-side filters if there are tasks
+                            // If empty, server already shows empty state, don't call renderTasks to avoid duplicate
+                            const hasTasksInHTML = newTaskList.querySelector('[data-task-id]');
+                            if (hasTasksInHTML && typeof window.renderTasks === 'function') {
                                 window.renderTasks();
                             }
+                        }
+                    } else {
+                        // Fallback: if HTML fetch fails, use renderTasks with updated window.tasks
+                        if (typeof window.renderTasks === 'function') {
+                            window.renderTasks();
                         }
                     }
                 }
