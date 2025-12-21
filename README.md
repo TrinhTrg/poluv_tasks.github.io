@@ -589,8 +589,8 @@ return Cache::remember($cacheKey, $cacheTtl, function () use ($userId) {
     // Fetch categories from database
 });
 ```
-
-#### Homepage Caching (`HomepageController`)
+ 
+#### Homepage Caching (`HomepageController`) 
 - **Strategy**: Cache initial page load only (30 seconds TTL)
 - **Cache Key**: `homepage:tasks:user:{userId}`
 - **Rationale**: AJAX requests (reloadTasks) always fetch fresh data
