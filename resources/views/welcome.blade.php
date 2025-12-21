@@ -45,27 +45,37 @@
                     <div class="relative flex items-center justify-center">
                         <div class="relative w-full max-w-md">
                             {{-- Floating Card --}}
-                            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-slate-700/50 transform rotate-3 hover:rotate-0 transition-transform duration-500" style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300">
-                                            {{__('category.work')}}
-                                </span>
-                                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
-                                            {{__('priority.high')}}
-                            </span>
+                            <div class="task-card-outer bg-white/80 dark:bg-pink-100 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-pink-200/50 transform rotate-3 hover:rotate-0 transition-transform duration-500" style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);">
+                                <style>
+                                    .dark .task-card-outer {
+                                        background: linear-gradient(135deg, rgba(253, 244, 255, 0.95) 0%, rgba(251, 207, 232, 0.9) 100%) !important;
+                                    }
+                                    .dark .task-card-dark-bg {
+                                        background: transparent !important;
+                                    }
+                                </style>
+                                <div class="task-card-dark-bg">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-200 text-pink-700 dark:text-pink-800">
+                                                {{__('category.work')}}
+                                        </span>
+                                            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-red-100 dark:bg-red-200 text-red-700 dark:text-red-800 border border-red-200 dark:border-red-300">
+                                                {{__('priority.high')}}
+                                    </span>
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full bg-pink-200 dark:bg-pink-300 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-pink-600 dark:text-pink-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                    <div class="w-8 h-8 rounded-full bg-pink-200 dark:bg-pink-900/50 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-900 mb-2">{{__('task.complete_project_proposal')}}</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-700 mb-4">{{__('task.finish_writing_the_project_proposal_document_and_submit_to_client')}}</p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-700">
+                                        <span>{{__('task.today_5_00_pm')}}</span>
+                                        <span class="px-2 py-1 bg-gray-100 dark:bg-pink-200 dark:text-gray-800 rounded-lg">{{__('task.in_progress')}}</span>
                                     </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{__('task.complete_project_proposal')}}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{__('task.finish_writing_the_project_proposal_document_and_submit_to_client')}}</p>
-                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <span>{{__('task.today_5_00_pm')}}</span>
-                                    <span class="px-2 py-1 bg-gray-100 dark:bg-slate-700 rounded-lg">{{__('task.in_progress')}}</span>
                                 </div>
                             </div>
                             
