@@ -24,10 +24,11 @@ class CheckTokenAbilities
 
         $token = $request->user()->currentAccessToken();
 
+        // If no token (session auth), allow full access for web app
+        // Abilities checking only applies to API token authentication
         if (!$token) {
-            return response()->json([
-                'message' => 'Invalid token.',
-            ], 401);
+            // Session authentication - allow full access for web app
+            return $next($request);
         }
 
         // Handle TransientToken (used in tests with actingAs())

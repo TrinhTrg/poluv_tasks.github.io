@@ -195,13 +195,47 @@
                 // Logic Timer
                 updateTimeFromInput() {
                     if (this.inputMinutes < 1) this.inputMinutes = 1;
-                    this.totalTime = this.inputMinutes * 60;
-                    this.timeLeft = this.totalTime;
+                    const newTotalTime = this.inputMinutes * 60;
+                    
+                    // Kiểm tra timer đã từng chạy chưa
+                    const hasBeenStarted = this.timeLeft !== this.totalTime;
+                    
+                    if (this.isRunning) {
+                        // Nếu đang chạy, chỉ cập nhật totalTime và điều chỉnh timeLeft tương ứng
+                        const diff = newTotalTime - this.totalTime;
+                        this.totalTime = newTotalTime;
+                        this.timeLeft = Math.max(0, this.timeLeft + diff);
+                    } else if (hasBeenStarted) {
+                        // Timer đang pause - điều chỉnh timeLeft tương ứng
+                        const diff = newTotalTime - this.totalTime;
+                        this.totalTime = newTotalTime;
+                        this.timeLeft = Math.max(0, this.timeLeft + diff);
+                    } else {
+                        // Timer chưa chạy - reset về totalTime mới
+                        this.totalTime = newTotalTime;
+                        this.timeLeft = newTotalTime;
+                    }
                 },
 
                 adjustTime(val) {
+                    // Controls chỉ hiện khi !isRunning, nên chỉ xử lý khi timer không đang chạy
                     this.inputMinutes += val;
-                    this.updateTimeFromInput();
+                    if (this.inputMinutes < 1) this.inputMinutes = 1;
+                    const newTotalTime = this.inputMinutes * 60;
+                    
+                    // Kiểm tra timer đã từng chạy chưa (đã pause) bằng cách so sánh timeLeft với totalTime
+                    const hasBeenStarted = this.timeLeft !== this.totalTime;
+                    
+                    if (hasBeenStarted) {
+                        // Timer đã từng chạy (đang pause) - tăng/giảm timeLeft, không reset
+                        const diff = val * 60; // Chuyển đổi phút sang giây
+                        this.totalTime = newTotalTime;
+                        this.timeLeft = Math.max(0, this.timeLeft + diff);
+                    } else {
+                        // Timer chưa chạy - reset về totalTime mới
+                        this.totalTime = newTotalTime;
+                        this.timeLeft = newTotalTime;
+                    }
                 },
 
                 toggleTimer() {

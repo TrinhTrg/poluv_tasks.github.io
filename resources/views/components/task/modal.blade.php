@@ -1,18 +1,19 @@
 {{-- Task Create/Edit Modal --}}
 <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#4A403A]/60 backdrop-blur-sm transition-opacity p-3 sm:p-4">
-    <div class="bg-[#FAF7F2] dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 w-full max-w-3xl smooth-shadow transform transition-all scale-100 border-2 sm:border-4 border-white dark:border-slate-700 max-h-[95vh] overflow-y-auto">
-        <h3 id="modalTitle" class="text-xl sm:text-2xl font-serif font-semibold mb-4 sm:mb-5 text-gray-800 dark:text-white">{{ __('task.add_new') }}</h3>
-        <form id="taskForm" class="space-y-3.5 sm:space-y-4">
-            {{-- Title - Full Width --}}
+    <div class="bg-[#FAF7F2] dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-5 w-full max-w-3xl smooth-shadow transform transition-all scale-100 border-2 sm:border-4 border-white dark:border-slate-700 max-h-[95vh] overflow-y-auto">
+        
+        <h3 id="modalTitle" class="text-xl sm:text-2xl font-serif font-semibold mb-3 text-gray-800 dark:text-white">{{ __('task.add_new') }}</h3>
+        
+        <form id="taskForm" class="space-y-2.5">
+            {{-- Title --}}
             <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.title') }}</label>
-                <input id="taskTitle" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition text-sm" placeholder="{{ __('task.placeholder_title') }}" required />
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-0.5 tracking-wider">{{ __('task.title') }}</label>
+                <input id="taskTitle" class="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition text-sm" placeholder="{{ __('task.placeholder_title') }}" required />
             </div>
-
             {{-- Description --}}
             <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.description') }}</label>
-                <textarea id="taskDesc" rows="2" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition resize-none text-sm" placeholder="{{ __('task.placeholder_details') }}"></textarea>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-0.5 tracking-wider">{{ __('task.description') }}</label>
+                <textarea id="taskDesc" rows="5" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition resize-none text-sm" placeholder="{{ __('task.placeholder_details') }}"></textarea>
             </div>
 
             {{-- Category + Remind me toggle --}}
@@ -34,25 +35,25 @@
                 </div>
                 <div class="flex items-center justify-between gap-4 w-full">
     
-    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex-1 break-words">
-        {{ __('task.remind_me') }}
-    </span>
-    
-    <label class="inline-flex items-center cursor-pointer ml-auto">
-        <input type="checkbox" id="taskNotify" class="sr-only peer" wire:model.live="notify">
-        
-        <div class="relative w-13 h-5 bg-gray-200 dark:bg-slate-600 rounded-full peer 
-                    shrink-0 min-w-[2.75rem]
-                    peer-focus:outline-none peer-focus:ring-3 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800
-                    peer-checked:bg-blue-600 
-                    after:content-[''] after:absolute after:top-[2px] after:left-[3px]
-                    after:bg-white after:rounded-full after:h-4 after:w-4 
-                    after:transition-all after:duration-200 after:ease-in-out
-                    after:shadow-md
-                    peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full">
-        </div>
-    </label>
-</div>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex-1 break-words">
+                        {{ __('task.remind_me') }}
+                    </span>
+                    
+                    <label class="inline-flex items-center cursor-pointer ml-auto">
+                        <input type="checkbox" id="taskNotify" class="sr-only peer" wire:model.live="notify">
+                        
+                        <div class="relative w-13 h-5 bg-gray-200 dark:bg-slate-600 rounded-full peer 
+                                    shrink-0 min-w-[2.75rem]
+                                    peer-focus:outline-none peer-focus:ring-3 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800
+                                    peer-checked:bg-blue-600 
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[3px]
+                                    after:bg-white after:rounded-full after:h-4 after:w-4 
+                                    after:transition-all after:duration-200 after:ease-in-out
+                                    after:shadow-md
+                                    peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full">
+                        </div>
+                    </label>
+                </div>
             </div>
 
             {{-- Start + Due --}}
@@ -109,12 +110,13 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1.5 tracking-wider">{{ __('task.priority') }}</label>
-                    <div x-data="{ 
+                    <div 
+                        x-data="{ 
                             priority: 2,
                             options: [
-                                { value: 1, label: @json(__('task.low')), color: 'bg-gray-100 text-gray-700 border-gray-300 ring-gray-300' },
-                                { value: 2, label: @json(__('task.medium')), color: 'bg-blue-100 text-blue-700 border-blue-300 ring-blue-300' },
-                                { value: 3, label: @json(__('task.high')), color: 'bg-red-100 text-red-700 border-red-300 ring-red-300' }
+                                { value: 1, label: @js(__('task.low')), color: 'bg-gray-100 text-gray-700 border-gray-300 ring-gray-300' },
+                                { value: 2, label: @js(__('task.medium')), color: 'bg-blue-100 text-blue-700 border-blue-300 ring-blue-300' },
+                                { value: 3, label: @js(__('task.high')), color: 'bg-red-100 text-red-700 border-red-300 ring-red-300' }
                             ]
                         }" 
                         class="flex gap-2"
@@ -135,9 +137,9 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 dark:border-slate-700">
-                <button type="button" id="cancelModal" class="w-full sm:w-auto px-5 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium transition text-sm">{{ __('task.cancel') }}</button>
-                <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700 font-medium shadow-lg transition text-sm">{{ __('task.save') }}</button>
+            <div class="flex flex-col sm:flex-row justify-end gap-2 pt-3 border-t border-gray-200 dark:border-slate-700 -mb-2">
+                <button type="button" id="cancelModal" class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 font-medium text-sm">{{ __('task.cancel') }}</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-black text-white font-medium shadow-lg text-sm">{{ __('task.save') }}</button>
             </div>
         </form>
     </div>

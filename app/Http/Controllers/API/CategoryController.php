@@ -94,6 +94,6 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => $e->getMessage(),
             ], 404);
-        }
     }
+}
 }

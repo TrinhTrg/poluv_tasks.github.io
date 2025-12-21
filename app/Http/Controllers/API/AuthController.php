@@ -70,9 +70,11 @@ class AuthController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
+        $token = $request->user()->currentAccessToken();
         return response()->json([
             'user' => $request->user()->only(['id', 'name', 'username', 'email']),
-            'token_abilities' => $request->user()->currentAccessToken()?->abilities ?? [],
+            'token_abilities' => $token?->abilities ?? [],
+            'auth_type' => $token ? 'token' : 'session',
         ]);
     }
 
