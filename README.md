@@ -223,4 +223,4 @@ If you encounter any issues:
 
 ---
 
-Made with ❤️ by PoLuv Team
+Made with ❤️ by PoLuv
