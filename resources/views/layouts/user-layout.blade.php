@@ -476,17 +476,44 @@
                     if (typeof window.deletingId === 'undefined' || !window.deletingId) return;
                     
                     const id = window.deletingId;
+                    const delModal = document.getElementById('deleteModal');
                     
-                    if (typeof window.tasks !== 'undefined') {
-                        window.tasks = window.tasks.filter(t => t.id !== parseInt(id));
+                    try {
+                        // Close modal first
+                        if (delModal) {
+                            delModal.classList.add('hidden');
+                            delModal.classList.remove('flex');
+                        }
+                        
+                        // Delete via API
+                        if (typeof window.apiCall !== 'undefined') {
+                            await window.apiCall(`/tasks/${id}`, 'DELETE');
+                        }
+                        
+                        // Remove from local tasks array
+                        if (typeof window.tasks !== 'undefined') {
+                            window.tasks = window.tasks.filter(t => t.id !== parseInt(id));
+                        }
+                        
+                        // Reload tasks dynamically without full page reload
+                        if (typeof window.reloadTasks === 'function') {
+                            await window.reloadTasks();
+                        } else {
+                            // Fallback: reload page if function doesn't exist
+                            window.location.reload();
+                        }
+                        
+                        // Reset deletingId
+                        window.deletingId = null;
+                    } catch (error) {
+                        console.error('Error deleting task:', error);
+                        alert('Failed to delete task. Please try again.');
+                        // Re-open modal if error
+                        if (delModal) {
+                            delModal.classList.remove('hidden');
+                            delModal.classList.add('flex');
+                        }
                     }
-                    
-                    if (typeof window.apiCall !== 'undefined') {
-                        await window.apiCall(`/tasks/${id}`, 'DELETE');
-                    }
-                    
-                    // Reload page to reflect changes
-                    window.location.reload();
                 });
             }
         });

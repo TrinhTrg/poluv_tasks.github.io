@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('color')->default('#000000');
             // $table->timestamps(); // Categories không cần timestamps
+            
+            // Index for user_id - frequently used in WHERE clauses
+            // This improves performance for CategoryService::getCategories() which queries by user_id
+            $table->index('user_id', 'categories_user_id_index');
         });
     }
     /**

@@ -49,23 +49,25 @@ class SendIncompleteTasksReminderJob implements ShouldQueue
                 return;
             }
 
-            // Get incomplete tasks for this user
-            $incompleteTasks = Task::where('user_id', $this->user->id)
+            // Optimized: Get overdue tasks and tasks without due date in separate efficient queries
+            // Query 1: Get all overdue tasks (no limit - we want all of them)
+            $overdueTasks = Task::where('user_id', $this->user->id)
                 ->where('is_completed', false)
                 ->whereNotNull('due_at')
-                ->where('due_at', '<', Carbon::now()) // Tasks that are overdue
+                ->where('due_at', '<', Carbon::now())
                 ->orderBy('due_at', 'asc')
                 ->get();
 
-            // Also include tasks without due date that are incomplete
+            // Query 2: Get recent tasks without due date (limit to 10)
             $tasksWithoutDueDate = Task::where('user_id', $this->user->id)
                 ->where('is_completed', false)
                 ->whereNull('due_at')
                 ->orderBy('created_at', 'desc')
-                ->limit(10) // Limit to recent 10 tasks
+                ->limit(10)
                 ->get();
 
-            $allIncompleteTasks = $incompleteTasks->merge($tasksWithoutDueDate);
+            // Combine both collections
+            $allIncompleteTasks = $overdueTasks->merge($tasksWithoutDueDate);
 
             if ($allIncompleteTasks->isEmpty()) {
                 return;

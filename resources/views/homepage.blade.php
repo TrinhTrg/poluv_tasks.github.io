@@ -531,66 +531,67 @@
             
             let arr = window.tasks.slice();
             
-            // 1. Filter by Calendar Date (if selected)
-            if (window.selectedDateOnCalendar) {
-                arr = arr.filter(t => {
+            // Optimized: Pre-calculate filter conditions (avoid recalculating in loop)
+            const selectedDate = window.selectedDateOnCalendar;
+            const isCompletedFilter = currentFilter === 'completed';
+            const isPendingFilter = currentFilter === 'pending';
+            const searchQuery = (typeof window.currentSearch !== 'undefined' && window.currentSearch.trim()) 
+                ? window.currentSearch.trim().toLowerCase() 
+                : null;
+            const categoryFilter = currentCategory && currentCategory !== 'all' ? currentCategory : null;
+            const isCategoryId = categoryFilter && !isNaN(parseInt(categoryFilter));
+            const categoryIdFilter = isCategoryId ? parseInt(categoryFilter) : null;
+            const priorityFilter = currentSort === 'high' ? 3 : (currentSort === 'medium' ? 2 : (currentSort === 'low' ? 1 : null));
+            
+            // Single filter loop - combine all filters for better performance
+            arr = arr.filter(t => {
+                // 1. Filter by Calendar Date
+                if (selectedDate) {
                     if (!t.date) return false;
                     const taskDate = t.date.slice(0, 10);
-                    return taskDate === window.selectedDateOnCalendar;
-                });
-            }
-            
-            // 2. Filter by Status (completed/pending)
-            if (currentFilter === 'completed') {
-                arr = arr.filter(t => t.is_completed === true || t.completed === true);
-            } else if (currentFilter === 'pending') {
-                arr = arr.filter(t => !(t.is_completed === true || t.completed === true));
-            }
-            // If currentFilter === 'all', show all tasks (no filter)
-            
-            // 3. Filter by Category
-            if (currentCategory !== 'all') {
-                const categoryId = parseInt(currentCategory);
-                if (!isNaN(categoryId)) {
-                    // currentCategory là ID, filter theo category_id
-                    arr = arr.filter(t => {
-                        if (t.category_id === categoryId) return true;
-                        if (t.category && typeof t.category === 'object' && t.category.id === categoryId) return true;
-                        return false;
-                    });
-        } else {
-                    // currentCategory là tên category, filter theo category name
-                    arr = arr.filter(t => {
+                    if (taskDate !== selectedDate) return false;
+                }
+                
+                // 2. Filter by Status
+                const taskCompleted = t.is_completed === true || t.completed === true;
+                if (isCompletedFilter && !taskCompleted) return false;
+                if (isPendingFilter && taskCompleted) return false;
+                
+                // 3. Filter by Category
+                if (categoryFilter) {
+                    if (isCategoryId) {
+                        // Filter by category ID
+                        const taskCategoryId = t.category_id || (t.category && typeof t.category === 'object' && t.category.id) || null;
+                        if (!taskCategoryId || parseInt(taskCategoryId) !== categoryIdFilter) {
+                            return false;
+                        }
+                    } else {
+                        // Filter by category name
                         const taskCategory = typeof t.category === 'object' ? t.category.name : t.category;
-                        return (taskCategory || '').toLowerCase() === currentCategory.toLowerCase();
-                    });
-            }
-        }
-
-            // 4. Filter by Search
-            if (typeof window.currentSearch !== 'undefined' && window.currentSearch.trim()){
-                const q = window.currentSearch.trim().toLowerCase();
-                arr = arr.filter(t => {
+                        if ((taskCategory || '').toLowerCase() !== categoryFilter.toLowerCase()) {
+                            return false;
+                        }
+                    }
+                }
+                
+                // 4. Filter by Search Query
+                if (searchQuery) {
                     const title = (t.title || '').toLowerCase();
                     const desc = (t.description || t.desc || '').toLowerCase();
-                    return title.includes(q) || desc.includes(q);
-        });
-    }
-
-            // 5. Filter by Priority (if sort is priority-based)
-            if (currentSort === 'high') {
-                // Only show high priority tasks (priority = 3)
-                arr = arr.filter(t => byPriorityValue(t.priority) === 3);
-            } else if (currentSort === 'medium') {
-                // Only show medium priority tasks (priority = 2)
-                arr = arr.filter(t => byPriorityValue(t.priority) === 2);
-            } else if (currentSort === 'low') {
-                // Only show low priority tasks (priority = 1)
-                arr = arr.filter(t => byPriorityValue(t.priority) === 1);
-    }
-            // If currentSort === 'newest', show all priorities (no filter)
+                    if (!title.includes(searchQuery) && !desc.includes(searchQuery)) {
+                        return false;
+                    }
+                }
+                
+                // 5. Filter by Priority (if sort is priority-based)
+                if (priorityFilter && byPriorityValue(t.priority) !== priorityFilter) {
+                    return false;
+                }
+                
+                return true;
+            });
             
-            // 6. Sort the filtered results
+            // Single sort operation
             if (currentSort === 'newest') {
                 // Sort by creation date (newest first)
                 arr.sort((a, b) => (b.created || 0) - (a.created || 0));
@@ -665,78 +666,91 @@
                 return;
             }
             
-            // Fetch updated HTML from server (AJAX request)
-            const htmlResponse = await fetch(window.location.href, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html',
-                },
-                credentials: 'include'
-            });
-            
-            if (htmlResponse.ok) {
-                const htmlText = await htmlResponse.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                const newTaskList = doc.getElementById('taskList');
+            // Fetch fresh tasks directly from API (bypass cache)
+            try {
+                const apiResponse = await window.apiCall('/tasks?per_page=1000', 'GET');
+                // Handle both collection (when per_page >= 1000) and paginated response
+                const tasksData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
                 
-                if (newTaskList) {
-                    // Replace task list HTML
-                    taskListContainer.innerHTML = newTaskList.innerHTML;
-                    
-                    // Fetch tasks from API to update window.tasks
-                    try {
-                        const apiResponse = await window.apiCall('/tasks?per_page=1000', 'GET');
-                        // Handle both collection (when per_page >= 1000) and paginated response
-                        const tasksData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
-                        if (tasksData && tasksData.length > 0) {
-                            // Map tasks using same logic as initial load
-                            window.tasks = tasksData.map(t => {
-                                let startTime = '';
-                                if (t.start_at) {
-                                    const startAtStr = String(t.start_at).replace('T', ' ').replace('Z', '').trim();
-                                    const [datePart, timePart] = startAtStr.split(' ');
-                                    if (datePart && timePart) {
-                                        const [hours, minutes] = timePart.split(':');
-                                        startTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-                                    }
-                                }
-                                
-                                let dueTime = '';
-                                if (t.due_at) {
-                                    const dueAtStr = String(t.due_at).replace('T', ' ').replace('Z', '').trim();
-                                    const [datePart, timePart] = dueAtStr.split(' ');
-                                    if (datePart && timePart) {
-                                        const [hours, minutes] = timePart.split(':');
-                                        dueTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-                                    }
-                                }
-                                
-                                return {
-                                    ...t,
-                                    start_at: t.start_at || t.start_date,
-                                    startDate: t.start_at || t.start_date,
-                                    start_date: t.start_at || t.start_date,
-                                    startTime: startTime,
-                                    due_at: t.due_at || t.due_date,
-                                    date: t.due_at || t.due_date,
-                                    due_date: t.due_at || t.due_date,
-                                    dueTime: dueTime,
-                                    created: new Date(t.created_at).getTime(),
-                                    category: (t.category && typeof t.category === 'object' && t.category.name) ? t.category.name : (t.category || 'Other'),
-                                    category_id: (t.category && typeof t.category === 'object' && t.category.id) ? t.category.id : (t.category_id || null),
-                                    priority: typeof t.priority === 'number' ? t.priority : (t.priority ? parseInt(t.priority) : 2),
-                                    completed: t.is_completed,
-                                    desc: t.description,
-                                    notify: t.has_notify
-                                };
-                            });
+                // Map tasks using same logic as initial load
+                if (tasksData && Array.isArray(tasksData)) {
+                    window.tasks = tasksData.map(t => {
+                        let startTime = '';
+                        if (t.start_at) {
+                            const startAtStr = String(t.start_at).replace('T', ' ').replace('Z', '').trim();
+                            const [datePart, timePart] = startAtStr.split(' ');
+                            if (datePart && timePart) {
+                                const [hours, minutes] = timePart.split(':');
+                                startTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                            }
                         }
-                    } catch (apiError) {
-                        console.warn('Could not fetch tasks from API:', apiError);
+                        
+                        let dueTime = '';
+                        if (t.due_at) {
+                            const dueAtStr = String(t.due_at).replace('T', ' ').replace('Z', '').trim();
+                            const [datePart, timePart] = dueAtStr.split(' ');
+                            if (datePart && timePart) {
+                                const [hours, minutes] = timePart.split(':');
+                                dueTime = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+                            }
+                        }
+                        
+                        return {
+                            ...t,
+                            start_at: t.start_at || t.start_date,
+                            startDate: t.start_at || t.start_date,
+                            start_date: t.start_at || t.start_date,
+                            startTime: startTime,
+                            due_at: t.due_at || t.due_date,
+                            date: t.due_at || t.due_date,
+                            due_date: t.due_at || t.due_date,
+                            dueTime: dueTime,
+                            created: new Date(t.created_at).getTime(),
+                            category: (t.category && typeof t.category === 'object' && t.category.name) ? t.category.name : (t.category || 'Other'),
+                            category_id: (t.category && typeof t.category === 'object' && t.category.id) ? t.category.id : (t.category_id || null),
+                            priority: typeof t.priority === 'number' ? t.priority : (t.priority ? parseInt(t.priority) : 2),
+                            completed: t.is_completed,
+                            desc: t.description,
+                            notify: t.has_notify
+                        };
+                    });
+                    
+                    // Re-render tasks using the updated window.tasks
+                    if (typeof window.renderTasks === 'function') {
+                        window.renderTasks();
+                    }
+                    
+                    // Fetch fresh HTML from server for task cards
+                    const htmlResponse = await fetch(window.location.href + '?_t=' + Date.now(), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html',
+                            'Cache-Control': 'no-cache',
+                        },
+                        credentials: 'include'
+                    });
+                    
+                    if (htmlResponse.ok) {
+                        const htmlText = await htmlResponse.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(htmlText, 'text/html');
+                        const newTaskList = doc.getElementById('taskList');
+                        
+                        if (newTaskList) {
+                            // Replace task list HTML
+                            taskListContainer.innerHTML = newTaskList.innerHTML;
+                            // Re-render to apply filters
+                            if (typeof window.renderTasks === 'function') {
+                                window.renderTasks();
+                            }
+                        }
                     }
                 }
+            } catch (apiError) {
+                console.error('Could not fetch tasks from API:', apiError);
+                // Fallback: reload page
+                window.location.reload();
             }
             
             // Update stats and re-render

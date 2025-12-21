@@ -17,15 +17,27 @@ class HomepageController extends Controller
         // Guest không thể xem tasks của user khác - chỉ hiển thị landing page
         if (Auth::check()) {
             $userId = Auth::id();
-            $cacheKey = 'homepage:tasks:user:' . $userId;
             
-            // Cache homepage tasks for 30 seconds (frequent updates expected)
-            $tasks = Cache::remember($cacheKey, 30, function () use ($userId) {
-                return Task::with('category')
+            // Don't cache for AJAX requests (reloadTasks function)
+            // Only cache for initial page load
+            $isAjaxRequest = request()->ajax() && request()->header('X-Requested-With') === 'XMLHttpRequest';
+            
+            if (!$isAjaxRequest) {
+                $cacheKey = 'homepage:tasks:user:' . $userId;
+                // Cache homepage tasks for 30 seconds (frequent updates expected)
+                $tasks = Cache::remember($cacheKey, 30, function () use ($userId) {
+                    return Task::with('category')
+                        ->where('user_id', $userId)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+                });
+            } else {
+                // For AJAX requests, always fetch fresh data
+                $tasks = Task::with('category')
                     ->where('user_id', $userId)
                     ->orderBy('created_at', 'desc')
                     ->get();
-            });
+            }
         } else {
             // Guest mode: không hiển thị tasks, chỉ hiển thị landing page
             $tasks = collect([]); // Empty collection

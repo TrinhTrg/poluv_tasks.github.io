@@ -33,12 +33,18 @@ class TaskController extends Controller
 
         $response = response()->json($tasks);
         
-        // Set cache headers for API response (only for GET requests without auth)
+        // Don't cache authenticated user requests - they need fresh data
+        // Only cache for guest/unauthenticated requests
         if (!$request->user() && $request->isMethod('GET')) {
             $response->headers->set('Cache-Control', 'public, max-age=60, must-revalidate');
             // Add ETag for cache validation
             $etag = md5($response->getContent());
             $response->setEtag($etag);
+        } else {
+            // For authenticated users, disable cache to ensure fresh data
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
         }
 
         return $response;

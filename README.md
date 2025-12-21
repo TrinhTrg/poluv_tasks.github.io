@@ -1,43 +1,87 @@
 # PoLuv Tasks
 
-A modern task management application built with Laravel and Livewire.
+## View HTML Prototype
 
-## 🚀 Features
+To view the HTML prototype design:
 
-- ✅ Task management with categories and priorities
-- 📊 Analytics and reporting
-- 🍅 Pomodoro timer for focus sessions
-- 🌓 Dark/Light theme support
-- 🌍 Multi-language support (EN/VI)
-- 📱 Responsive design
-- 🔔 Task notifications
-- 📈 Progress tracking
+1. Navigate to the prototype directory:
+```bash
+cd prototype-test-UI
+```
 
-## 🆕 New Integrations
+2. Open `index.html` in your web browser:
+   - **Option 1**: Double-click `index.html` file
+   - **Option 2**: Right-click `index.html` → "Open with" → Choose your browser
+   - **Option 3**: Use a local server (recommended):
+   ```bash
+   # Using Python (if installed)
+   python -m http.server 8001
+   
+   # Using PHP (if installed)
+   php -S localhost:8001
+   ```
+   Then open `http://localhost:8001` in your browser
 
-### 📊 Google Analytics
-Track user behavior and analyze traffic patterns.
+**Note**: The prototype is a static HTML file showing the UI design mockup before implementation.
 
-### 💬 Slack Notifications
-Real-time error alerts and notifications to your team.
+# Overview
 
-### 🔍 Sentry Error Tracking
-Comprehensive error monitoring with detailed stack traces.
+PoLuv Tasks is a modern task management application that helps users organize their daily tasks efficiently. Our application provides a comprehensive solution for task management with features like priority-based organization, category management, Pomodoro timer for focused work sessions, and intelligent notifications. We focus on creating an intuitive user experience that adapts to both light and dark themes, supporting multiple languages to serve a global audience.
 
-## 🧪 Testing Integrations
+# Technologies
 
-**📖 Xem hướng dẫn đầy đủ:** [TEST_INTEGRATIONS_GUIDE.md](TEST_INTEGRATIONS_GUIDE.md)
+This Laravel 12 task management web application leverages modern and efficient technologies to deliver a high-performance, secure, and scalable user experience:
 
-**Quick test URLs (chỉ hoạt động khi `APP_ENV=local`):**
+-   **Laravel 12**: Latest version of the PHP framework for robust backend development
+-   **Blade Templates**: For rendering dynamic and reusable HTML views
+-   **Eloquent ORM**: Simplifies database interactions using an intuitive and expressive syntax with optimized queries
+-   **MySQL/SQLite Database**: A reliable and scalable relational database system
+-   **Livewire 3**: Enables seamless interaction between the frontend and backend without writing JavaScript
+-   **Tailwind CSS**: A utility-first framework for styling with speed and flexibility
+-   **Alpine.js**: Lightweight JavaScript framework for interactive UI components
+-   **Vite**: Modern build tool for compiling and optimizing frontend assets
+-   **Laravel Sanctum**: Provides robust API authentication with token-based and session-based authentication
+-   **Laravel Telescope**: Offers powerful debugging and monitoring tools for real-time application insights
+-   **Sentry**: Comprehensive error tracking and monitoring with detailed stack traces
+-   **Slack Integration**: Facilitates real-time communication and alerts for application events
+-   **Google Analytics**: Tracks user behavior and analyzes traffic patterns
+-   **Job Queues**: Handles time-consuming tasks asynchronously to improve application responsiveness
+-   **Batch Jobs**: Manages scheduled tasks like email reminders and password reset codes
+-   **Service Layer Architecture**: Separates business logic from controllers for better code organization
+-   **Dedoc Scramble**: Automatic API documentation generation from code
+-   **Middleware**: For security, data validation, localization, and performance optimizations
+-   **Caching Mechanisms**: Browser caching, server-side caching, and cache headers for improved performance
+-   **Monolog**: Integrated logging system for debugging and error tracking
+-   **PHPUnit**: Comprehensive testing suite for ensuring application reliability (70%+ code coverage)
+-   **Custom Exceptions**: Proper error handling with meaningful HTTP status codes
+-   **Database Migrations**: Version-controlled database schema management
+-   **Seeders & Factories**: Automated data generation for testing and development
 
-## 📋 Requirements
+# Features
+
+- ✅ **Task Management**: Create, update, delete, and organize tasks with categories and priorities
+- 📊 **Analytics Dashboard**: Track progress and visualize task completion statistics
+- 🍅 **Pomodoro Timer**: Built-in focus timer for productive work sessions
+- 🌓 **Dark/Light Theme**: Automatic theme switching based on system preferences
+- 🌍 **Multi-language Support**: Available in English (EN) and Vietnamese (VI)
+- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- 🔔 **Smart Notifications**: Task reminders and due date alerts via email
+- 📈 **Progress Tracking**: Monitor task completion and productivity metrics
+- 🔐 **Secure Authentication**: Session-based for web app, token-based for API clients
+- 📝 **RESTful API**: Complete API with authentication and documentation
+- 🔍 **Search & Filter**: Advanced filtering by status, category, priority, and date
+- 🎨 **Customizable Categories**: Organize tasks with color-coded categories
+- ⚡ **Performance Optimized**: Eager loading, query optimization, and caching strategies
+
+# Requirements
 
 - PHP 8.2 or higher
 - Composer
 - Node.js & NPM
-- SQLite (or other database)
+- MySQL or SQLite
+- Git
 
-## 🛠️ Installation
+# Installation
 
 1. Clone the repository:
 ```bash
@@ -45,134 +89,126 @@ git clone <repository-url>
 cd poluv_tasks.github.io
 ```
 
-2. Install dependencies:
+2. Install PHP dependencies:
 ```bash
 composer install
+```
+
+3. Install Node.js dependencies:
+```bash
 npm install
 ```
 
-3. Setup environment:
+4. Setup environment:
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-4. Configure database:
-```bash
-touch database/database.sqlite
-php artisan migrate
+5. Configure database in `.env`:
+```env
+DB_CONNECTION=sqlite
+# Or use MySQL:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=poluv_tasks
+# DB_USERNAME=root
+# DB_PASSWORD=
 ```
 
-5. Build assets:
+6. Run migrations and seeders:
+```bash
+touch database/database.sqlite  # For SQLite only
+php artisan migrate
+php artisan db:seed
+```
+
+7. Build assets:
 ```bash
 npm run build
 ```
 
-6. Start development server:
+8. Start development server:
 ```bash
 php artisan serve
 ```
 
-## ⚙️ Configuration
-
-### Basic Configuration
-Edit `.env` file for basic settings (database, app name, etc.)
-
-### Integrations Configuration
-See [ENV_CONFIGURATION.md](ENV_CONFIGURATION.md) for:
-- Google Analytics setup
-- Slack webhook configuration
-- Sentry DSN setup
-
-## 🧪 Testing Integrations
-
-### Test từ Browser (Dễ nhất) ⭐
-
-**1. Test Slack:**
-```
-http://localhost:8000/test/slack        → Gửi message test
-http://localhost:8000/test/slack-error  → Tạo lỗi (gửi đến Slack + Sentry)
-```
-
-**2. Test Sentry:**
-```
-http://localhost:8000/test/sentry          → Gửi message test
-http://localhost:8000/test/sentry-exception → Tạo exception (auto-capture)
-```
-
-**3. Test Google Analytics:**
-```
-http://localhost:8000/test/ga  → Track page view (xem GA Realtime)
-```
-
-### Test bằng Tinker (Chi tiết hơn)
-
-```bash
-php artisan tinker
-```
-
-**Test Slack:**
-```php
->>> \App\Facades\Slack::info('🧪 Test từ Tinker');
->>> \App\Facades\Slack::error('Test error', new \Exception('Test exception'));
->>> \App\Facades\Slack::success('Test thành công!');
-```
-
-**Test Sentry:**
-```php
->>> \Sentry\captureMessage('🧪 Test Sentry từ Tinker');
->>> throw new \Exception('Test exception cho Sentry');
-```
-
-**Kiểm tra cấu hình:**
-```php
->>> config('services.google_analytics.tracking_id');  // Kiểm tra GA ID
->>> config('logging.channels.slack.url');  // Kiểm tra Slack Webhook
->>> config('sentry.dsn');  // Kiểm tra Sentry DSN
-```
-
-### Kiểm tra kết quả:
-
-- **Slack**: Vào Slack workspace → Channel đã cấu hình → Xem message
-- **Sentry**: Vào https://sentry.io → Issues → Xem events
-- **Google Analytics**: Vào https://analytics.google.com → Realtime → Xem visits/events
-
-### ⚠️ Lưu ý
-
-- Route `/test-integrations` chỉ hoạt động khi `APP_ENV` ≠ `production`
-- Nếu không thấy route, kiểm tra `.env`: `APP_ENV=local`
-- Đảm bảo đã cấu hình API keys trong `.env` trước khi test
-
-## 📚 Documentation
-
-- [Quick Start Guide](QUICK_START_INTEGRATIONS.md) - Get started in 5 minutes
-- [Integration Summary](INTEGRATION_SUMMARY.md) - Overview of all integrations
-- [Google Analytics Setup](GOOGLE_ANALYTICS_SETUP.md) - Detailed GA setup guide
-- [Slack Setup](SLACK_SETUP.md) - Slack notification guide
-- [Sentry Setup](SENTRY_SETUP.md) - Error tracking setup
-- [Environment Configuration](ENV_CONFIGURATION.md) - All environment variables
-
-## 🔧 Development
-
-### Clear caches:
-```bash
-php artisan cache:clear
-php artisan config:clear
-php artisan view:clear
-php artisan optimize:clear
-```
-
-### Run development server:
+For development with hot reload:
 ```bash
 composer run dev
 ```
 
-This will start:
-- Laravel development server
-- Queue worker
-- Vite dev server
+# Configuration
 
-## 📦 Production Deployment
+## Environment Variables
+
+Configure integrations in `.env`:
+
+```env
+# Google Analytics
+GOOGLE_ANALYTICS_TRACKING_ID=G-XXXXXXXXXX
+
+# Slack Notifications
+LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+
+# Sentry Error Tracking
+SENTRY_LARAVEL_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+
+# Application
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+```
+
+# Testing
+
+## Run Tests
+
+```bash
+php artisan test
+```
+
+## Code Coverage
+
+```bash
+php artisan test --coverage
+```
+
+Target: 70%+ code coverage
+
+# Development
+
+## Clear Caches
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+php artisan route:clear
+php artisan optimize:clear
+```
+
+## Queue Worker
+
+```bash
+php artisan queue:work
+```
+
+## Scheduled Tasks
+
+The application uses Laravel's task scheduler. Make sure to add this to your crontab:
+
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Scheduled tasks include:
+- Task due notifications (every minute)
+- Incomplete tasks reminders (daily at midnight)
+- Server metrics monitoring (every 5 minutes)
+
+# Production Deployment
 
 1. Set environment to production:
 ```env
@@ -180,12 +216,7 @@ APP_ENV=production
 APP_DEBUG=false
 ```
 
-2. Configure integrations:
-```env
-GOOGLE_ANALYTICS_TRACKING_ID=G-XXXXXXXXXX
-LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/...
-SENTRY_LARAVEL_DSN=https://xxx@xxx.ingest.sentry.io/xxx
-```
+2. Configure integrations (see Configuration section)
 
 3. Optimize application:
 ```bash
@@ -193,33 +224,72 @@ composer install --optimize-autoloader --no-dev
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan optimize
 npm run build
 ```
 
-## 🤝 Contributing
+4. Set up queue worker and scheduler (see Development section)
+
+# API Documentation
+
+Access API documentation at:
+```
+http://localhost:8000/docs/api
+```
+
+# Performance Optimizations
+
+The application implements various performance optimizations:
+
+- **Database Query Optimization**: Eager loading to prevent N+1 queries
+- **Caching**: Task and category caching for improved response times
+- **Bulk Operations**: Batch updates to reduce database queries
+- **Frontend Optimization**: Single-pass filtering and lazy loading
+- **Asset Optimization**: Code splitting, minification, and compression
+- **Cache Headers**: Proper ETag and Cache-Control headers for static resources
+
+# Troubleshooting
+
+## Common Issues
+
+1. **500 Error on Login**: Check `.env` file and ensure `APP_KEY` is set
+2. **Queue Not Processing**: Verify `QUEUE_CONNECTION` in `.env` and run `php artisan queue:work`
+3. **Assets Not Loading**: Run `npm run build` or `npm run dev`
+4. **Database Errors**: Run `php artisan migrate:fresh --seed`
+
+## Logs
+
+Check application logs:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Debug Mode
+
+For detailed error information, enable debug mode in `.env`:
+```env
+APP_DEBUG=true
+```
+
+# Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
+# License
 
 This project is open-sourced software licensed under the MIT license.
 
-## 🆘 Support
+# Contributors
 
-If you encounter any issues:
-1. Check the documentation files
-2. Visit `/test-integrations` to diagnose integration issues
-3. Check Laravel logs in `storage/logs/laravel.log`
-4. Review Sentry dashboard for errors
+- PoLuv Development Team
 
-## 🎯 Roadmap
+---
 
-- [ ] Email notifications
-- [ ] Task templates
-- [ ] Team collaboration features
-- [ ] Mobile app
-- [ ] API documentation
-- [ ] Advanced analytics
+# Video Demo
+
+Here is video demo:
+
+[]
 
 ---
 
