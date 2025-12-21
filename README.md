@@ -596,7 +596,7 @@ return Cache::remember($cacheKey, $cacheTtl, function () use ($userId) {
 - **Rationale**: AJAX requests (reloadTasks) always fetch fresh data
 - **Implementation**: Skips caching for AJAX requests
 
-```php
+```php 
 if (!$isAjaxRequest) {
     $cacheKey = 'homepage:tasks:user:' . $userId;
     $tasks = Cache::remember($cacheKey, 30, function () use ($userId) {

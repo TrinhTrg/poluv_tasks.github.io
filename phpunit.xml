@@ -28,7 +28,7 @@
             <html outputDirectory="tests/coverage/html"/>
             <text outputFile="tests/coverage/coverage.txt"/>
             <clover outputFile="tests/coverage/clover.xml"/>
-        </report> 
+        </report>  
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
