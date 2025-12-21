@@ -37,6 +37,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    {{-- Google Analytics --}}
+    @if(config('services.google_analytics.tracking_id'))
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.tracking_id') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ config('services.google_analytics.tracking_id') }}', {
+            'page_title': document.title,
+            'page_path': window.location.pathname
+        });
+    </script>
+    @endif
+
     <script>
         tailwind.config = {
             darkMode: 'class', // Quan trọng: Dark mode kích hoạt bằng class 'dark' ở thẻ html

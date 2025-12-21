@@ -32,7 +32,14 @@ return [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
+            'webhook_url' => env('LOG_SLACK_WEBHOOK_URL'),
         ],
     ],
+
+    'google_analytics' => [
+        'tracking_id' => env('GOOGLE_ANALYTICS_TRACKING_ID'),
+    ],
+
+    // Note: Sentry config nằm trong config/sentry.php, không cần định nghĩa lại ở đây
 
 ];
