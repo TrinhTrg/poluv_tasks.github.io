@@ -1,31 +1,31 @@
 {{-- Task Create/Edit Modal --}}
 <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#4A403A]/60 backdrop-blur-sm transition-opacity p-3 sm:p-4">
     <div class="bg-[#FAF7F2] dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 w-full max-w-3xl smooth-shadow transform transition-all scale-100 border-2 sm:border-4 border-white dark:border-slate-700 max-h-[95vh] overflow-y-auto">
-        <h3 id="modalTitle" class="text-xl sm:text-2xl font-serif font-semibold mb-4 sm:mb-5 text-gray-800 dark:text-white">Add New Task</h3>
+        <h3 id="modalTitle" class="text-xl sm:text-2xl font-serif font-semibold mb-4 sm:mb-5 text-gray-800 dark:text-white">{{ __('task.add_new') }}</h3>
         <form id="taskForm" class="space-y-3.5 sm:space-y-4">
             {{-- Title - Full Width --}}
             <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Title</label>
-                <input id="taskTitle" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition text-sm" placeholder="e.g. Learn React" required />
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.title') }}</label>
+                <input id="taskTitle" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition text-sm" placeholder="{{ __('task.placeholder_title') }}" required />
             </div>
 
             {{-- Description --}}
             <div>
-                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Description</label>
-                <textarea id="taskDesc" rows="2" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition resize-none text-sm" placeholder="Details..."></textarea>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.description') }}</label>
+                <textarea id="taskDesc" rows="2" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:border-pink-300 dark:text-white outline-none transition resize-none text-sm" placeholder="{{ __('task.placeholder_details') }}"></textarea>
             </div>
 
             {{-- Category + Remind me toggle --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Category</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.category') }}</label>
                     <div class="relative">
                         <select id="taskCategory" class="w-full px-3 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl appearance-none outline-none dark:text-white cursor-pointer text-sm">
-                            <option value="Work">💼 Work</option>
-                            <option value="Homework">📚 Homework</option>
-                            <option value="Meeting">🗣️ Meeting</option>
-                            <option value="Personal">👤 Personal</option>
-                            <option value="Other">📦 Other</option>
+                            <option value="Work">{{__('category.work')}}</option>
+                            <option value="Homework">{{__('category.homework')}}</option>
+                            <option value="Meeting">{{__('category.meeting')}}</option>
+                            <option value="Personal">{{__('category.personal')}}</option>
+                            <option value="Other">{{__('category.other')}}</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -35,7 +35,7 @@
                 <div class="flex items-center justify-between gap-4 w-full">
     
     <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex-1 break-words">
-        Remind me (24h alert)
+        {{ __('task.remind_me') }}
     </span>
     
     <label class="inline-flex items-center cursor-pointer ml-auto">
@@ -58,7 +58,7 @@
             {{-- Start + Due --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Start</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.start') }}</label>
                     <div class="flex flex-col gap-1.5">
                         <div class="relative">
                             <input id="taskStartDate" type="date" class="w-full px-3 py-2 pr-9 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm dark:text-white dark:scheme-dark" />
@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">Due</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1 tracking-wider">{{ __('task.due') }}</label>
                     <div class="flex flex-col gap-1.5">
                         <div class="relative">
                             <input id="taskDueDate" type="date" class="w-full px-3 py-2 pr-9 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm dark:text-white dark:scheme-dark" />
@@ -104,17 +104,17 @@
             {{-- Color Tag + Priority --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1.5 tracking-wider">Color Tag</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1.5 tracking-wider">{{ __('task.color_tag') }}</label>
                     <div id="colorPickerContainer" class="flex flex-wrap gap-2.5 justify-start"></div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1.5 tracking-wider">Priority</label>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1.5 tracking-wider">{{ __('task.priority') }}</label>
                     <div x-data="{ 
                             priority: 2,
                             options: [
-                                { value: 1, label: 'Low', color: 'bg-gray-100 text-gray-700 border-gray-300 ring-gray-300' },
-                                { value: 2, label: 'Medium', color: 'bg-blue-100 text-blue-700 border-blue-300 ring-blue-300' },
-                                { value: 3, label: 'High', color: 'bg-red-100 text-red-700 border-red-300 ring-red-300' }
+                                { value: 1, label: @json(__('task.low')), color: 'bg-gray-100 text-gray-700 border-gray-300 ring-gray-300' },
+                                { value: 2, label: @json(__('task.medium')), color: 'bg-blue-100 text-blue-700 border-blue-300 ring-blue-300' },
+                                { value: 3, label: @json(__('task.high')), color: 'bg-red-100 text-red-700 border-red-300 ring-red-300' }
                             ]
                         }" 
                         class="flex gap-2"
@@ -136,8 +136,8 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 dark:border-slate-700">
-                <button type="button" id="cancelModal" class="w-full sm:w-auto px-5 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium transition text-sm">Cancel</button>
-                <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700 font-medium shadow-lg transition text-sm">Save Task</button>
+                <button type="button" id="cancelModal" class="w-full sm:w-auto px-5 py-2 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium transition text-sm">{{ __('task.cancel') }}</button>
+                <button type="submit" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700 font-medium shadow-lg transition text-sm">{{ __('task.save') }}</button>
             </div>
         </form>
     </div>
@@ -146,6 +146,13 @@
 @push('scripts')
 <script>
     // --- MODAL SCRIPTS (Add/Edit Task Form) ---
+    // Translations for modal
+    const modalTranslations = {
+        addNew: @json(__('task.add_new')),
+        edit: @json(__('task.edit')),
+        new: @json(__('task.new'))
+    };
+    
     // Color picker options - Pastel colors
     const colorOptions = [
         { id: 'colorOption1', value: '#FFB6C1', bgClass: 'bg-[#FFB6C1]' }, // Pastel Pink
@@ -189,7 +196,7 @@
     function openAddModal(){
         if (typeof window.editingId === 'undefined') window.editingId = null;
         window.editingId = null;
-        document.getElementById('modalTitle').innerText = 'New Task';
+        document.getElementById('modalTitle').innerText = modalTranslations.new;
         document.getElementById('taskTitle').value = '';
         document.getElementById('taskDesc').value = '';
         document.getElementById('taskCategory').value = 'Work';
@@ -197,7 +204,18 @@
         document.getElementById('taskStartTime').value = '';
         document.getElementById('taskDueDate').value = (window.selectedDateOnCalendar || new Date().toISOString().slice(0,10));
         document.getElementById('taskDueTime').value = '';
-        document.getElementById('taskPriority').value = 'medium';
+        
+        // Set priority mặc định là 2 (medium) cho Alpine.js component
+        const priorityValue = 2;
+        const priorityComponent = document.querySelector('#taskPriority').closest('[x-data]');
+        if (priorityComponent && priorityComponent.__x) {
+            // Alpine.js v3
+            priorityComponent.__x.$data.priority = priorityValue;
+        } else if (priorityComponent && priorityComponent._x_dataStack) {
+            // Alpine.js v2
+            priorityComponent._x_dataStack[0].priority = priorityValue;
+        }
+        document.getElementById('taskPriority').value = priorityValue;
         document.getElementById('taskNotify').checked = false;
         setSelectedColor();
         renderColorOptions();
@@ -214,7 +232,7 @@
         if(!t) return;
         if (typeof window.editingId === 'undefined') window.editingId = null;
         window.editingId = id;
-        document.getElementById('modalTitle').innerText = 'Edit Task';
+        document.getElementById('modalTitle').innerText = modalTranslations.edit;
         document.getElementById('taskTitle').value = t.title;
         document.getElementById('taskDesc').value = t.description || t.desc || '';
         document.getElementById('taskCategory').value = t.category || 'Work';
@@ -276,14 +294,25 @@
         document.getElementById('taskDueDate').value = dueDate;
         document.getElementById('taskDueTime').value = dueTime;
         
-        // Convert priority từ số (1,2,3) sang string (low,medium,high) để match với select option
-        let priorityValue = 'medium';
+        // Convert priority từ số (1,2,3) hoặc string sang số để match với Alpine.js component
+        let priorityValue = 2; // Default medium
         if (t.priority) {
             const priorityNum = typeof t.priority === 'string' ? parseInt(t.priority) : t.priority;
-            if (priorityNum === 1) priorityValue = 'low';
-            else if (priorityNum === 2) priorityValue = 'medium';
-            else if (priorityNum === 3) priorityValue = 'high';
+            if (priorityNum === 1 || priorityNum === 2 || priorityNum === 3) {
+                priorityValue = priorityNum;
+            }
         }
+        
+        // Update Alpine.js component priority value
+        const priorityComponent = document.querySelector('#taskPriority').closest('[x-data]');
+        if (priorityComponent && priorityComponent.__x) {
+            // Alpine.js v3
+            priorityComponent.__x.$data.priority = priorityValue;
+        } else if (priorityComponent && priorityComponent._x_dataStack) {
+            // Alpine.js v2
+            priorityComponent._x_dataStack[0].priority = priorityValue;
+        }
+        // Also update hidden input value
         document.getElementById('taskPriority').value = priorityValue;
         document.getElementById('taskNotify').checked = t.has_notify || t.notify || false;
         renderColorOptions();
@@ -339,6 +368,11 @@
                     return;
                 }
 
+                // Convert priority từ số (1,2,3) sang string ('low','medium','high')
+                const priorityValue = document.getElementById('taskPriority').value;
+                const priorityMap = { '1': 'low', '2': 'medium', '3': 'high' };
+                const priorityString = priorityMap[priorityValue] || 'medium';
+
                 const payload = {
                     title: title,
                     description: document.getElementById('taskDesc').value.trim(),
@@ -347,7 +381,7 @@
                     start_time: document.getElementById('taskStartTime').value,
                     due_date: document.getElementById('taskDueDate').value,
                     due_time: document.getElementById('taskDueTime').value,
-                    priority: document.getElementById('taskPriority').value,
+                    priority: priorityString,
                     notify: document.getElementById('taskNotify').checked,
                     color: document.querySelector('input[name="taskColor"]:checked')?.value || DEFAULT_COLOR
                 };
@@ -362,15 +396,21 @@
                     
                     if (result && result.id) {
                         closeModal();
-                        // Reload để lấy HTML mới từ server
-                        window.location.reload();
+                        
+                        // Reload tasks dynamically without full page reload
+                        if (typeof window.reloadTasks === 'function') {
+                            await window.reloadTasks();
+                        } else {
+                            // Fallback: reload page if function doesn't exist
+                            window.location.reload();
+                        }
                     } else {
                         console.error('Save task failed:', result);
-                        alert('Failed to save task. Please check the console for details.');
+                        alert(@json(__('errors.failed_to_save_task')) + ': ' + @json(__('errors.check_console')));
                     }
                 } catch (error) {
                     console.error('Error saving task:', error);
-                    alert('Failed to save task: ' + (error.message || 'Unknown error'));
+                    alert(@json(__('errors.failed_to_save_task')) + ': ' + (error.message || @json(__('errors.unknown_error'))));
                 }
             });
         }

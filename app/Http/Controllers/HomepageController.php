@@ -36,6 +36,11 @@ class HomepageController extends Controller
             return $time ? $time->format('H:i:s') : '23:59:59';
         });
 
+        // If AJAX request, return only task list HTML
+        if (request()->ajax() && request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return view('components.task.grids', compact('tasks'))->render();
+        }
+
         // Trả về view 'index' và truyền biến $tasks sang
         return view('homepage', compact('tasks', 'todayTasks'));
     }

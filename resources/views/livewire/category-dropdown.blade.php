@@ -1,17 +1,28 @@
 {{-- resources/views/livewire/category-dropdown.blade.php --}}
 <div 
+    wire:ignore
     x-data="{ 
         open: false, 
         selected: @entangle('category').live,
+        // Map category names to translations
+        categoryTranslations: {
+            'Work': @js(__('category.work')),
+            'Homework': @js(__('category.homework')),
+            'Meeting': @js(__('category.meeting')),
+            'Personal': @js(__('category.personal')),
+            'Other': @js(__('category.other'))
+        },
         // Truyền danh sách category vào JS để hiển thị tên trên nút bấm
         categories: @js($categories->pluck('name', 'id')->toArray()),
         // Hàm helper để lấy tên hiển thị trên nút
         getButtonLabel() {
             if (this.selected === 'all') {
-                return 'All Categories';
+                return @js(__('category.all'));
             }
-            // Trả về tên category dựa trên ID đang chọn, hoặc fallback
-            return this.categories[this.selected] || 'Select Category';
+            // Lấy tên category từ ID
+            const categoryName = this.categories[this.selected];
+            // Trả về translation hoặc tên gốc nếu không tìm thấy
+            return this.categoryTranslations[categoryName] || categoryName || @js(__('category.all'));
         }
     }" 
     class="relative"
@@ -57,7 +68,7 @@
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300"
                 :class="selected === 'all' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                All Categories
+                {{ __('category.all') }}
             </li>
 
             {{-- Dynamic Categories Options --}}
@@ -67,11 +78,14 @@
                     class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 truncate"
                     :class="selected == '{{ $cat->id }}' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
                 >
-                    {{ $cat->name }}
+                    @php
+                        $catKey = 'category.' . strtolower($cat->name);
+                    @endphp
+                    {{ __($catKey) }}
                 </li>
             @empty
                 <li class="px-4 py-2 text-sm text-gray-400 dark:text-gray-500 italic text-center">
-                    No categories found
+                    {{ __('category.no_categories_found') }}
                 </li>
             @endforelse
         </ul>

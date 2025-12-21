@@ -8,17 +8,19 @@
         </svg>
     </button>
 
-    <div class="relative cursor-pointer group" onclick="requestNotificationPermission()">
-        <svg id="bellIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
+    <div class="relative cursor-pointer group" id="notificationContainer">
+        <button type="button" id="notificationBell" onclick="toggleNotificationPanel()" class="focus:outline-none">
+            <svg id="bellIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+        </button>
         
-        <div id="notifBadge" class="hidden absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center shadow-sm animate-pulse">0</div>
+        <div id="notifBadge" class="hidden absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center shadow-sm animate-pulse z-10">0</div>
         
-        <div class="absolute right-0 top-8 sm:top-10 w-56 sm:w-64 bg-white dark:bg-slate-800 p-2 sm:p-3 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 hidden group-hover:block z-50 transform origin-top-right transition-all">
-            <div class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase mb-2 border-b dark:border-slate-700 pb-1">Upcoming (24h)</div>
+        <div id="notificationPanel" class="absolute right-0 top-8 sm:top-10 w-56 sm:w-64 bg-white dark:bg-slate-800 p-2 sm:p-3 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 hidden group-hover:block z-50 transform origin-top-right transition-all">
+            <div class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase mb-2 border-b dark:border-slate-700 pb-1">{{ __('notification.upcoming_24h') }}</div>
             <ul id="notifList" class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-48 overflow-y-auto">
-                <li class="text-gray-400 italic text-center py-2">No upcoming tasks</li>
+                <li class="text-gray-400 italic text-center py-2">{{ __('notification.no_upcoming') }}</li>
             </ul>
         </div>
     </div>
@@ -27,7 +29,7 @@
         @auth
             {{-- Authenticated User --}}
             <div class="hidden sm:block text-right">
-                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Welcome back</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('nav.welcome_back') }}</div>
                 <div class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white">
                     {{ Auth::user()->username ?? Auth::user()->name }}
                 </div>
@@ -38,9 +40,18 @@
                     id="authAvatarBtn"
                     class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-600 shadow-md hover:ring-2 hover:ring-pink-300 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-300"
                 >
-                    <img src="https://i.pravatar.cc/150?u={{ Auth::id() }}" 
+                    @php
+                        $user = Auth::user();
+                        if ($user->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->profile_picture)) {
+                            $avatarUrl = asset('storage/' . $user->profile_picture);
+                        } else {
+                            $avatarUrl = "https://i.pravatar.cc/150?u=" . $user->id;
+                        }
+                    @endphp
+                    <img src="{{ $avatarUrl }}" 
                          alt="avatar" 
                          id="authAvatarImg"
+                         onerror="this.src='https://i.pravatar.cc/150?u={{ $user->id }}'"
                          class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-300">
                 </button>
                 {{-- Dropdown menu --}}
@@ -49,21 +60,66 @@
                     class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 z-50 hidden"
                 >
                     <div class="py-2">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700">
-                            Profile
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700">
-                            Settings
+                        <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700">
+                            {{ __('nav.profile') }}
                         </a>
                         <div class="border-t border-gray-100 dark:border-slate-700 mt-1 pt-1">
-                            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer">
-                                Language
+                            <div 
+                                x-data="{ open: false }"
+                                @click.away="open = false"
+                                class="relative"
+                            >
+                                <button 
+                                    @click="open = !open"
+                                    type="button"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer"
+                                >
+                                    <span>{{ __('nav.language') }}</span>
+                                </button>
+                                <div 
+                                    x-show="open"
+                                    x-transition
+                                    class="absolute right-full top-0 mr-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-100 dark:border-slate-700 z-50"
+                                    style="display: none;"
+                                >
+                                    <form action="{{ route('language.switch') }}" method="POST" class="py-1">
+                                        @csrf
+                                        <button 
+                                            type="submit" 
+                                            name="locale" 
+                                            value="en"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                        >
+                                            <span class="text-base">🇬🇧</span>
+                                            <span>English</span>
+                                            @if(app()->getLocale() === 'en')
+                                                <svg class="w-4 h-4 ml-auto text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            name="locale" 
+                                            value="vi"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                        >
+                                            <span class="text-base">🇻🇳</span>
+                                            <span>Tiếng Việt</span>
+                                            @if(app()->getLocale() === 'vi')
+                                                <svg class="w-4 h-4 ml-auto text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <form action="{{ route('logout') }}" method="POST" class="border-t border-gray-100 dark:border-slate-700 mt-1">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                Logout
+                                {{ __('nav.logout') }}
                             </button>
                         </form>
                     </div>
@@ -72,9 +128,9 @@
         @else
             {{-- Guest User --}}
             <div class="hidden sm:block text-right">
-                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Welcome</div>
+                <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('nav.welcome') }}</div>
                 <div class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white">
-                    Guest!
+                    {{ __('nav.guest') }}
                 </div>
             </div>
             <div class="relative" id="guestAvatarDropdown">
@@ -95,14 +151,62 @@
                 >
                     <div class="py-2">
                         <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 transition">
-                            Sign In
+                            {{ __('nav.sign_in') }}
                         </a>
                         <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 transition">
-                            Sign Up
+                            {{ __('nav.sign_up') }}
                         </a>
                         <div class="border-t border-gray-100 dark:border-slate-700 mt-1 pt-1">
-                            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer transition">
-                                Language
+                            <div 
+                                x-data="{ open: false }"
+                                @click.away="open = false"
+                                class="relative"
+                            >
+                                <button 
+                                    @click="open = !open"
+                                    type="button"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 cursor-pointer transition"
+                                >
+                                    <span>{{ __('nav.language') }}</span>
+                                </button>
+                                <div 
+                                    x-show="open"
+                                    x-transition
+                                    class="absolute right-full top-0 mr-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-100 dark:border-slate-700 z-50"
+                                    style="display: none;"
+                                >
+                                    <form action="{{ route('language.switch') }}" method="POST" class="py-1">
+                                        @csrf
+                                        <button 
+                                            type="submit" 
+                                            name="locale" 
+                                            value="en"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                        >
+                                            <span class="text-base">🇬🇧</span>
+                                            <span>English</span>
+                                            @if(app()->getLocale() === 'en')
+                                                <svg class="w-4 h-4 ml-auto text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            name="locale" 
+                                            value="vi"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                        >
+                                            <span class="text-base">🇻🇳</span>
+                                            <span>Tiếng Việt</span>
+                                            @if(app()->getLocale() === 'vi')
+                                                <svg class="w-4 h-4 ml-auto text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,8 +219,75 @@
 
 @push('scripts')
 <script>
+    // Notification panel toggle state
+    let notificationPanelPinned = false;
+
+    // Toggle notification panel on click
+    function toggleNotificationPanel() {
+        const panel = document.getElementById('notificationPanel');
+        if (!panel) return;
+        
+        notificationPanelPinned = !notificationPanelPinned;
+        
+        if (notificationPanelPinned) {
+            panel.classList.remove('hidden');
+            panel.classList.add('block');
+            // Request notification permission
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        } else {
+            panel.classList.add('hidden');
+            panel.classList.remove('block');
+        }
+    }
+
     // Avatar dropdown functionality (both guest and authenticated)
     document.addEventListener('DOMContentLoaded', function() {
+        // Notification panel hover behavior
+        const notificationContainer = document.getElementById('notificationContainer');
+        const notificationPanel = document.getElementById('notificationPanel');
+        
+        if (notificationContainer && notificationPanel) {
+            // Show on hover (temporary)
+            notificationContainer.addEventListener('mouseenter', function() {
+                if (!notificationPanelPinned) {
+                    notificationPanel.classList.remove('hidden');
+                    notificationPanel.classList.add('block');
+                }
+            });
+            
+            // Hide on mouse leave if not pinned
+            notificationContainer.addEventListener('mouseleave', function() {
+                if (!notificationPanelPinned) {
+                    notificationPanel.classList.add('hidden');
+                    notificationPanel.classList.remove('block');
+                }
+            });
+            
+            // Close panel when clicking outside (only if pinned)
+            // But don't close if clicking on task items inside the panel
+            document.addEventListener('click', function(e) {
+                if (notificationPanelPinned && 
+                    !notificationContainer.contains(e.target) && 
+                    !notificationPanel.contains(e.target)) {
+                    notificationPanelPinned = false;
+                    notificationPanel.classList.add('hidden');
+                    notificationPanel.classList.remove('block');
+                }
+            });
+            
+            // Prevent panel from closing when clicking on task items
+            if (notificationPanel) {
+                notificationPanel.addEventListener('click', function(e) {
+                    // If clicking on a task item, don't close the panel
+                    if (e.target.closest('[data-task-id]')) {
+                        e.stopPropagation();
+                    }
+                });
+            }
+        }
+        
         // Guest avatar dropdown
         const guestAvatarBtn = document.getElementById('guestAvatarBtn');
         const guestDropdownMenu = document.getElementById('guestDropdownMenu');
@@ -155,5 +326,8 @@
             });
         }
     });
+
+    // Make toggleNotificationPanel globally available
+    window.toggleNotificationPanel = toggleNotificationPanel;
 </script>
 @endpush

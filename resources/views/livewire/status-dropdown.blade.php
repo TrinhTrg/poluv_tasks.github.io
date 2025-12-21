@@ -1,14 +1,15 @@
 <div 
+    wire:ignore
     x-data="{ 
         open: false, 
         selected: @entangle('status').live,
         getButtonLabel() {
             const labels = {
-                'all': 'All Status',
-                'completed': 'Completed',
-                'pending': 'Pending'
+                'all': @js(__('status.all')),
+                'completed': @js(__('status.completed')),
+                'pending': @js(__('status.pending'))
             };
-            return labels[this.selected] || 'All Status';
+            return labels[this.selected] || @js(__('status.all'));
         }
     }" 
     class="relative"
@@ -51,21 +52,21 @@
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'all' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                All Status
+                {{ __('status.all') }}
             </li>
             <li 
                 @click="selected = 'completed'; open = false" 
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'completed' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                Completed
+                {{ __('status.completed') }}
             </li>
             <li 
                 @click="selected = 'pending'; open = false" 
                 class="px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-pink-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300" 
                 :class="selected === 'pending' ? 'font-bold text-pink-600 dark:text-pink-400' : ''"
             >
-                Pending
+                {{ __('status.pending') }}
             </li>
         </ul>
     </div>

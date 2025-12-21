@@ -44,7 +44,23 @@
 
             <button id="btnOpenCalendarSettings" class="px-3 sm:px-4 py-1 sm:py-1.5 rounded-xl hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition group border border-transparent hover:border-gray-200 dark:hover:border-slate-600">
                 <span id="currentMonth" class="text-center font-serif text-base sm:text-lg font-bold text-gray-800 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 select-none">
-                    {{ now()->format('F Y') }}
+                    @php
+                        $monthNames = [
+                            1 => __('calendar.january'),
+                            2 => __('calendar.february'),
+                            3 => __('calendar.march'),
+                            4 => __('calendar.april'),
+                            5 => __('calendar.may'),
+                            6 => __('calendar.june'),
+                            7 => __('calendar.july'),
+                            8 => __('calendar.august'),
+                            9 => __('calendar.september'),
+                            10 => __('calendar.october'),
+                            11 => __('calendar.november'),
+                            12 => __('calendar.december'),
+                        ];
+                    @endphp
+                    {{ $monthNames[now()->month] }} {{ now()->format('Y') }}
                 </span>
             </button>
 
@@ -66,7 +82,15 @@
             
             <div id="calendar" class="w-full">
                 <div class="grid grid-cols-7 gap-y-1.5 sm:gap-y-2 gap-x-0.5 sm:gap-x-1 text-[10px] sm:text-xs mb-2 border-b border-gray-100 dark:border-slate-700 pb-1.5 sm:pb-2">
-                    @foreach(['Su','Mo','Tu','We','Th','Fr','Sa'] as $day)
+                    @foreach([
+                        __('calendar.su'),
+                        __('calendar.mo'),
+                        __('calendar.tu'),
+                        __('calendar.we'),
+                        __('calendar.th'),
+                        __('calendar.fr'),
+                        __('calendar.sa')
+                    ] as $day)
                         <div class="text-center font-bold text-gray-400 uppercase tracking-wider">{{ $day }}</div>
                     @endforeach
                 </div>
@@ -119,7 +143,11 @@
         
         const year = window.currentViewDate.getFullYear();
         const month = window.currentViewDate.getMonth();
-        const mNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Use translations from window.calendarTranslations if available
+        const mNames = window.calendarTranslations?.months || ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = window.calendarTranslations?.days || ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayAbbrs = window.calendarTranslations?.dayAbbrs || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
         
         if(elMonthTitle) elMonthTitle.innerText = mNames[month] + " " + year;
         
@@ -127,7 +155,7 @@
         // Update sidebar headers
         const dayNameEl = document.getElementById('currentDayName');
         const fullDateEl = document.getElementById('currentFullDate');
-        if(dayNameEl) dayNameEl.innerText = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
+        if(dayNameEl) dayNameEl.innerText = dayNames[today.getDay()];
         if(fullDateEl) fullDateEl.innerText = `${String(today.getDate()).padStart(2,'0')}, ${mNames[today.getMonth()]} ${today.getFullYear()}`;
 
         const first = new Date(year, month, 1);
@@ -136,7 +164,7 @@
         const daysInMonth = last.getDate();
 
         let htmlDays = '<div class="grid grid-cols-7 gap-y-2 gap-x-1 text-xs mb-2 border-b border-gray-100 dark:border-slate-700 pb-2">';
-        ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => htmlDays += `<div class="text-center font-bold text-gray-400 uppercase tracking-wider">${d}</div>`);
+        dayAbbrs.forEach(d => htmlDays += `<div class="text-center font-bold text-gray-400 uppercase tracking-wider">${d}</div>`);
         htmlDays += '</div><div class="grid grid-cols-7 gap-y-2 gap-x-1">';
         
         for (let i=0;i<startDay;i++) htmlDays += `<div></div>`;
@@ -256,9 +284,11 @@
             });
             // Xóa empty state của date filter nếu có
             const allEmptyStates = taskList.querySelectorAll('.col-span-1.md\\:col-span-2');
+            const noTasksForDate = window.translations?.noTasksForDate || 'No tasks found for this date';
+            const tryAnotherDate = window.translations?.trySelectingAnotherDate || 'Try selecting another date';
             allEmptyStates.forEach(emptyState => {
-                if (emptyState.textContent.includes('No tasks found for this date') || 
-                    emptyState.textContent.includes('Try selecting another date')) {
+                if (emptyState.textContent.includes(noTasksForDate) || 
+                    emptyState.textContent.includes(tryAnotherDate)) {
                     emptyState.remove();
                 }
             });
@@ -307,11 +337,14 @@
         
         // Xóa tất cả empty states trước (cả date và search empty states)
         const allEmptyStates = taskList.querySelectorAll('.col-span-1.md\\:col-span-2');
+        const noTasksForDate = window.translations?.noTasksForDate || 'No tasks found for this date';
+        const tryAnotherDate = window.translations?.trySelectingAnotherDate || 'Try selecting another date';
+        const tryDifferentKeywords = window.translations?.tryDifferentKeywords || 'Try different keywords';
         allEmptyStates.forEach(emptyState => {
             // Chỉ xóa empty states được tạo bởi JavaScript (không phải server-rendered)
-            if (emptyState.textContent.includes('No tasks found for this date') || 
-                emptyState.textContent.includes('Try different keywords') ||
-                emptyState.textContent.includes('Try selecting another date')) {
+            if (emptyState.textContent.includes(noTasksForDate) || 
+                emptyState.textContent.includes(tryDifferentKeywords) ||
+                emptyState.textContent.includes(tryAnotherDate)) {
                 emptyState.remove();
             }
         });
@@ -320,10 +353,12 @@
             // Tạo empty state mới cho date filter
             const emptyDiv = document.createElement('div');
             emptyDiv.className = 'col-span-1 md:col-span-2 text-center py-8 sm:py-10';
+            const noTasksText = window.translations?.noTasksForDate || 'No tasks found for this date';
+            const tryAnotherText = window.translations?.trySelectingAnotherDate || 'Try selecting another date or create a new task!';
             emptyDiv.innerHTML = `
                 <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
-                <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">No tasks found for this date</h3>
-                <p class="text-xs sm:text-sm text-gray-400">Try selecting another date or create a new task!</p>
+                <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">${noTasksText}</h3>
+                <p class="text-xs sm:text-sm text-gray-400">${tryAnotherText}</p>
             `;
             taskList.appendChild(emptyDiv);
         }
