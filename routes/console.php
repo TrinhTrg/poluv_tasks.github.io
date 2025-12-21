@@ -13,3 +13,10 @@ Schedule::command('todo:scan-due')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Schedule server metrics monitoring (every 5 minutes)
+Schedule::command('monitor:server-metrics')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onOneServer();

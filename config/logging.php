@@ -54,7 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single', 'slack'],
+            'channels' => ['daily', 'slack'],
             'ignore_exceptions' => false,
         ],
 
@@ -127,6 +127,27 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Monitoring channel for server metrics and slow queries
+        'monitoring' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/monitoring.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_MONITORING_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Additional Logging Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for slow query alerts and other monitoring features
+    |
+    */
+
+    'slow_query_alerts' => env('SLOW_QUERY_ALERTS_ENABLED', true),
+    'slow_query_threshold' => env('SLOW_QUERY_THRESHOLD', 1000), // milliseconds
 
 ];

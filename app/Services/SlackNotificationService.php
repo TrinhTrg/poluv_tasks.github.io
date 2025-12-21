@@ -58,21 +58,24 @@ class SlackNotificationService
     /**
      * Gửi thông báo lỗi đến Slack
      */
-    public function error(string $message, ?\Throwable $exception = null): bool
+    public function error(string $message, array|\Throwable $contextOrException = null): bool
     {
         $context = [
             'level' => 'error',
             'message' => $message,
         ];
 
-        if ($exception) {
+        if ($contextOrException instanceof \Throwable) {
+            $exception = $contextOrException;
             $context['exception'] = get_class($exception);
             $context['file'] = $exception->getFile();
             $context['line'] = $exception->getLine();
             $context['trace'] = substr($exception->getTraceAsString(), 0, 500);
+        } elseif (is_array($contextOrException)) {
+            $context = array_merge($context, $contextOrException);
         }
 
-        return $this->send('🚨 *Error Alert*', $context);
+        return $this->send($message, $context);
     }
 
     /**
