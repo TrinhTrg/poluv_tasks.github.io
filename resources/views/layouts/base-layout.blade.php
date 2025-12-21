@@ -35,33 +35,31 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     
-    {{-- Preload critical fonts --}}
+    {{-- Load critical font inline or with preload for better LCP --}}
+    @if(request()->routeIs('register') || request()->routeIs('login') || request()->routeIs('password.*'))
+    {{-- For auth pages, use system fonts fallback first, then load font asynchronously --}}
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+    @else
+    {{-- For other pages, load font normally --}}
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+    @endif
     
     {{-- Load non-critical fonts asynchronously --}}
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&display=swap" rel="stylesheet"></noscript>
+    
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet"></noscript>
     
     {{-- Defer non-critical scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    
+    {{-- Load Tailwind CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
-    {{-- Google Analytics --}}
-    @if(config('services.google_analytics.tracking_id'))
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.tracking_id') }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{ config('services.google_analytics.tracking_id') }}', {
-            'page_title': document.title,
-            'page_path': window.location.pathname
-        });
-    </script>
-    @endif
-
+    {{-- Tailwind Config - Must load after Tailwind --}}
     <script>
         tailwind.config = {
             darkMode: 'class', // Quan trọng: Dark mode kích hoạt bằng class 'dark' ở thẻ html
@@ -87,6 +85,21 @@
             }
         }
     </script>
+
+    {{-- Google Analytics - Load asynchronously --}}
+    @if(config('services.google_analytics.tracking_id'))
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.tracking_id') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ config('services.google_analytics.tracking_id') }}', {
+            'page_title': document.title,
+            'page_path': window.location.pathname
+        });
+    </script>
+    @endif
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

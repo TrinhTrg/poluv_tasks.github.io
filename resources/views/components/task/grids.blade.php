@@ -26,7 +26,7 @@
                     </div>
                 </div>
             @else
-                <div class="col-span-1 md:col-span-2 text-center py-8 sm:py-10">
+                <div class="col-span-1 md:col-span-2 text-center py-8 sm:py-10 empty-state-server">
                     <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">📝</div>
                     <h3 class="text-lg sm:text-xl font-serif text-gray-600 dark:text-gray-400">{{ __('homepage.no_tasks_found') }}</h3>
                     <p class="text-xs sm:text-sm text-gray-400">{{ __('homepage.create_new_task') }}</p>
