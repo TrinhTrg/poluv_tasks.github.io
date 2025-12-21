@@ -42,7 +42,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update'); 
-});
+}); 
 
 // Language switching route
 Route::post('/language/switch', function (\Illuminate\Http\Request $request) {
