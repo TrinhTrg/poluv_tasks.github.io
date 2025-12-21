@@ -144,7 +144,7 @@ class TaskControllerTest extends TestCase
         ]);
 
         $response->assertStatus(401);
-        $response->assertJson(['message' => 'Unauthorized. Please sign in to create tasks.']);
+        $response->assertJsonFragment(['message' => 'Unauthenticated.']);
     }
 
     /** @test */

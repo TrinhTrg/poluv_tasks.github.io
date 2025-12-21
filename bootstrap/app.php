@@ -16,10 +16,43 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
+        
+        // Register custom middleware aliases
+        $middleware->alias([
+            'abilities' => \App\Http\Middleware\CheckTokenAbilities::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Tích hợp Sentry để tự động capture unhandled exceptions
         Integration::handles($exceptions);
+
+        // Handle custom exceptions with appropriate HTTP status codes
+        $exceptions->render(function (\App\Exceptions\UnauthorizedException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'status' => 401,
+                ], 401);
+            }
+        });
+
+        $exceptions->render(function (\App\Exceptions\ForbiddenException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'status' => 403,
+                ], 403);
+            }
+        });
+
+        $exceptions->render(function (\App\Exceptions\NotFoundException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'status' => 404,
+                ], 404);
+            }
+        });
 
         // Báo lỗi đến Slack khi có exception nghiêm trọng
         $exceptions->report(function (\Throwable $e) {
