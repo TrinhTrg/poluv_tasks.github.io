@@ -380,6 +380,133 @@ Access API documentation at:
 http://localhost:8000/docs/api
 ```
 
+## API Authentication with Laravel Sanctum
+
+This application uses **Laravel Sanctum** for API authentication, providing both token-based and session-based authentication.
+
+### Sanctum Installation & Configuration
+
+Sanctum is already installed via Composer. The configuration includes:
+
+1. **Package Installation** (already done):
+   ```bash
+   composer require laravel/sanctum
+   ```
+
+2. **Migration** (already run):
+   ```bash
+   php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+   php artisan migrate
+   ```
+   This creates the `personal_access_tokens` table to store API tokens.
+
+3. **Model Configuration**:
+   The `User` model uses the `HasApiTokens` trait:
+   ```php
+   use Laravel\Sanctum\HasApiTokens;
+
+   class User extends Authenticatable
+   {
+       use HasApiTokens, Notifiable;
+       // ...
+   }
+   ```
+
+4. **Middleware Configuration**:
+   Protected API routes use `auth:sanctum` middleware:
+   ```php
+   Route::middleware(['web', 'auth:sanctum'])->prefix('v1')->group(function () {
+       // Protected routes
+   });
+   ```
+
+5. **Scramble Integration**:
+   Sanctum Bearer Token authentication is configured in `AppServiceProvider` for Scramble documentation:
+   ```php
+   Scramble::afterOpenApiGenerated(function (\Dedoc\Scramble\Support\Generator\OpenApi $openApi) {
+       $openApi->secure(
+           \Dedoc\Scramble\Support\Generator\SecurityScheme::http('bearer', 'Sanctum')
+               ->as('sanctum')
+               ->setDescription('Sanctum Bearer Token authentication. Get your token from /api/v1/auth/login endpoint.')
+               ->default()
+       );
+   });
+   ```
+
+### Token Abilities/Scopes
+
+Sanctum supports token abilities for fine-grained access control:
+
+**Available Abilities:**
+- `tasks:read` - Read tasks
+- `tasks:write` - Create and update tasks
+- `tasks:delete` - Delete tasks
+- `categories:read` - Read categories
+- `categories:write` - Create and update categories
+- `categories:delete` - Delete categories
+- `*` - Full access (default)
+
+### Testing API with Scramble
+
+1. **Access Scramble Documentation**:
+   ```
+   http://localhost:8000/docs/api
+   ```
+
+2. **Get a Token**:
+   - Find the `POST /api/v1/auth/login` endpoint
+   - Send a request with your credentials:
+     ```json
+     {
+       "email": "your-email@example.com",
+       "password": "your-password",
+       "device_name": "Scramble API Test"
+     }
+     ```
+   - Copy the `token` from the response
+
+3. **Use Token in Scramble**:
+   - Find the **"Auth" panel** (right sidebar or top bar)
+   - Enter your token in the **"Token:"** field
+   - The token will be automatically used for all protected endpoints
+
+4. **Test Protected Endpoints**:
+   - All protected endpoints (marked with 🔒) will use the token
+   - Example: `GET /api/v1/auth/user` to verify authentication
+   - Status `200 OK` with user data confirms successful authentication
+
+### API Authentication Endpoints
+
+- `POST /api/v1/auth/login` - Login and create API token
+- `GET /api/v1/auth/user` - Get authenticated user info
+- `GET /api/v1/auth/tokens` - List all user tokens
+- `POST /api/v1/auth/logout` - Revoke current token
+- `POST /api/v1/auth/logout-all` - Revoke all user tokens
+- `DELETE /api/v1/auth/tokens/{tokenId}` - Revoke specific token
+- `GET /api/v1/auth/abilities` - Get available token abilities/scopes
+
+### Token Management
+
+**Create Token with Specific Abilities:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password",
+  "device_name": "Read-Only App",
+  "abilities": ["tasks:read", "categories:read"]
+}
+```
+
+**View Token Abilities:**
+Call `GET /api/v1/auth/user` to see:
+```json
+{
+  "user": {...},
+  "token_abilities": ["tasks:read", "categories:read"],
+  "auth_type": "token"
+}
+```
+
 # Performance Optimizations
 
 The application implements various performance optimizations:
