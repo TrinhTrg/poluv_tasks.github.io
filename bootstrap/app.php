@@ -74,7 +74,18 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         // Handle 500 Internal Server Error
+        // Don't catch ValidationException - let Laravel handle it (returns 422)
         $exceptions->render(function (\Throwable $e, $request) {
+            // Skip ValidationException - Laravel handles it with 422 status
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+            
+            // Skip AuthenticationException - Laravel handles it with 401 status
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return null;
+            }
+            
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => app()->environment('production') 

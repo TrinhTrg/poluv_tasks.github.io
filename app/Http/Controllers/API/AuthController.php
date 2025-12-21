@@ -70,9 +70,17 @@ class AuthController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
-        $token = $request->user()->currentAccessToken();
+        $user = $request->user();
+        
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+        
+        $token = $user->currentAccessToken();
         return response()->json([
-            'user' => $request->user()->only(['id', 'name', 'username', 'email']),
+            'user' => $user->only(['id', 'name', 'username', 'email']),
             'token_abilities' => $token?->abilities ?? [],
             'auth_type' => $token ? 'token' : 'session',
         ]);

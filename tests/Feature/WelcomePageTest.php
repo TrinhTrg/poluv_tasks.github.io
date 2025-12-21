@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 
 class WelcomePageTest extends TestCase
 {
@@ -22,6 +23,16 @@ class WelcomePageTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSeeText('PoLuv', false); // Case insensitive
+    }
+
+    /** @test */
+    public function authenticated_user_is_redirected_to_home()
+    {
+        $user = $this->createUser();
+
+        $response = $this->actingAs($user)->get('/');
+
+        $response->assertRedirect(route('home'));
     }
 }
 
