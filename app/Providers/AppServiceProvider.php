@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Observers\CategoryObserver;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,6 +36,16 @@ class AppServiceProvider extends ServiceProvider
             // Change this to check for admin role if needed:
             // return $user && $user->isAdmin();
             return $user !== null;
+        });
+
+        // Configure Scramble for Sanctum Bearer Token authentication
+        Scramble::afterOpenApiGenerated(function (\Dedoc\Scramble\Support\Generator\OpenApi $openApi) {
+            $openApi->secure(
+                \Dedoc\Scramble\Support\Generator\SecurityScheme::http('bearer', 'Sanctum')
+                    ->as('sanctum')
+                    ->setDescription('Sanctum Bearer Token authentication. Get your token from /api/v1/auth/login endpoint.')
+                    ->default()
+            );
         });
     }
 }
