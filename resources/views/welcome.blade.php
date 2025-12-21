@@ -50,9 +50,9 @@
                                     .dark .task-card-outer {
                                         background: linear-gradient(135deg, rgba(253, 244, 255, 0.95) 0%, rgba(251, 207, 232, 0.9) 100%) !important;
                                     }
-                                    .dark .task-card-dark-bg {
+                                    .dark .task-card-dark-bg { 
                                         background: transparent !important;
-                                    }
+                                    } 
                                 </style>
                                 <div class="task-card-dark-bg">
                                     <div class="flex items-center justify-between mb-4">
