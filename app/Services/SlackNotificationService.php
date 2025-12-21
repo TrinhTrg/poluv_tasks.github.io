@@ -20,14 +20,41 @@ class SlackNotificationService
 
     /**
      * Gửi thông báo đơn giản đến Slack
+     * 
+     * @param bool $async If true, dispatch to queue instead of sending immediately
      */
-    public function send(string $message, ?array $context = []): bool
+    public function send(string $message, ?array $context = [], bool $async = true): bool
     {
         if (empty($this->webhookUrl)) {
             Log::warning('Slack webhook URL not configured');
             return false;
         }
 
+        // For critical errors, send immediately (synchronously)
+        if (!$async || ($context['level'] ?? '') === 'critical') {
+            return $this->sendSync($message, $context);
+        }
+
+        // For other notifications, dispatch to queue
+        try {
+            \App\Jobs\SendSlackNotificationJob::dispatch(
+                $message,
+                $context,
+                $context['level'] ?? 'info'
+            );
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch Slack notification job: ' . $e->getMessage());
+            // Fallback to synchronous send
+            return $this->sendSync($message, $context);
+        }
+    }
+
+    /**
+     * Send notification synchronously (immediately)
+     */
+    protected function sendSync(string $message, ?array $context = []): bool
+    {
         try {
             $payload = [
                 'username' => $this->username,

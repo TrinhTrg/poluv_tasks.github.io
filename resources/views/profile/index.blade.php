@@ -69,7 +69,9 @@
                             <img src="{{ $avatarUrl }}" 
                                  alt="Profile Picture" 
                                  onerror="this.src='https://i.pravatar.cc/150?u={{ $user->id }}'"
-                                 class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 dark:border-slate-600">
+                                 class="w-32 h-32 rounded-full object-cover border-4 border-gray-200 dark:border-slate-600"
+                                 loading="lazy"
+                                 decoding="async">
                         </div>
 
                         {{-- File Requirements --}}

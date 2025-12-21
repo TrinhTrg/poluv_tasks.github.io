@@ -20,3 +20,10 @@ Schedule::command('monitor:server-metrics')
     ->withoutOverlapping()
     ->runInBackground()
     ->onOneServer();
+
+// Schedule incomplete tasks reminder (daily at midnight)
+Schedule::command('tasks:send-incomplete-reminders')
+    ->dailyAt('00:00')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onOneServer();

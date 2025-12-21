@@ -7,6 +7,7 @@ use App\Exceptions\NotFoundException;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryService
 {
@@ -17,18 +18,23 @@ class CategoryService
     {
         $userId = $userId ?? $this->getUserId();
 
-        return Category::query()
-            ->when($userId !== null, function ($q) use ($userId) {
-                return $q->where('user_id', $userId);
-            }, function ($q) {
-                // Guest mode: categories with null user_id or user_id = 1
-                return $q->where(function ($query) {
-                    $query->whereNull('user_id')
-                        ->orWhere('user_id', 1);
-                });
-            })
-            ->orderBy('id', 'desc')
-            ->get();
+        $cacheKey = 'categories:user:' . ($userId ?? 'guest');
+        $cacheTtl = $userId ? 60 : 120; // Cache for 60s (authenticated) or 120s (guest)
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($userId) {
+            return Category::query()
+                ->when($userId !== null, function ($q) use ($userId) {
+                    return $q->where('user_id', $userId);
+                }, function ($q) {
+                    // Guest mode: categories with null user_id or user_id = 1
+                    return $q->where(function ($query) {
+                        $query->whereNull('user_id')
+                            ->orWhere('user_id', 1);
+                    });
+                })
+                ->orderBy('id', 'desc')
+                ->get();
+        });
     }
 
     /**
@@ -65,6 +71,9 @@ class CategoryService
             'color' => $data['color'],
         ]);
 
+        // Clear cache for this user's categories
+        $this->clearUserCategoriesCache($userId);
+
         return $category;
     }
 
@@ -95,6 +104,9 @@ class CategoryService
 
         $category->save();
 
+        // Clear cache for this user's categories
+        $this->clearUserCategoriesCache($userId);
+
         return $category;
     }
 
@@ -116,7 +128,15 @@ class CategoryService
 
         $this->checkOwnership($category, $userId);
 
-        return $category->delete();
+        $userId = $category->user_id;
+        $deleted = $category->delete();
+
+        // Clear cache for this user's categories
+        if ($deleted) {
+            $this->clearUserCategoriesCache($userId);
+        }
+
+        return $deleted;
     }
 
     /**
@@ -141,6 +161,15 @@ class CategoryService
     protected function getUserId(): ?int
     {
         return Auth::check() ? Auth::id() : null;
+    }
+
+    /**
+     * Clear cache for user's categories
+     */
+    protected function clearUserCategoriesCache(?int $userId): void
+    {
+        $cacheKey = 'categories:user:' . ($userId ?? 'guest');
+        Cache::forget($cacheKey);
     }
 }
 

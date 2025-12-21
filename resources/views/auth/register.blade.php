@@ -44,24 +44,34 @@
             {{-- Email --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.email_address') }}</label>
-                <input type="email" name="email" value="{{ old('email') }}" required 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
+                <input type="email" 
+                       name="email" 
+                       value="{{ old('email') }}" 
+                       autocomplete="email"
+                       required 
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
                 @error('email') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             {{-- Password --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.password') }}</label>
-                <input type="password" name="password" required 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
+                <input type="password" 
+                       name="password" 
+                       autocomplete="new-password"
+                       required 
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
                 @error('password') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             {{-- Confirm Password --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('auth.confirm_password') }}</label>
-                <input type="password" name="password_confirmation" required 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
+                <input type="password" 
+                       name="password_confirmation" 
+                       autocomplete="new-password"
+                       required 
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 focus:border-pink-300 focus:ring focus:ring-pink-200 transition outline-none bg-gray-50 dark:bg-slate-700 dark:text-white">
             </div>
 
             <button type="submit" class="w-full bg-[#6FA774] text-white py-3.5 rounded-xl font-bold hover:bg-[#5E9163] transition shadow-lg transform hover:-translate-y-0.5">

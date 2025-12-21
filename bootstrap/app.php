@@ -20,7 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register custom middleware aliases
         $middleware->alias([
             'abilities' => \App\Http\Middleware\CheckTokenAbilities::class,
+            'cache.headers' => \App\Http\Middleware\SetCacheHeaders::class,
         ]);
+        
+        // Note: SetCacheHeaders middleware is registered as alias only
+        // Apply it selectively to API routes or static assets via route groups
+        // Do not apply globally to web routes as it may interfere with view variables like $errors
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Tích hợp Sentry để tự động capture unhandled exceptions

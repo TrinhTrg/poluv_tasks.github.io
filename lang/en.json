@@ -157,6 +157,14 @@
     "profile.jpg_or_png": "JPG or PNG",
     "profile.uploading": "Uploading...",
     "profile.go_back": "Go back",
+    "profile.profile_picture_updated_successfully": "Profile picture updated successfully!",
+    "profile.profile_updated_successfully": "Profile updated successfully!",
+    "profile.username_required": "Username is required!",
+    "profile.username_alpha_dash": "Username can only contain letters, numbers, dashes and underscores. No spaces allowed!",
+    "profile.username_unique": "This username is already taken!",
+    "profile.email_required": "Email is required!",
+    "profile.email_email": "Please enter a valid email address with @ symbol!",
+    "profile.email_unique": "This email is already taken!",
     
     "auth.login": "Login",
     "auth.register": "Register",
@@ -190,7 +198,7 @@
     "auth.verification_code": "Verification Code",
     "auth.enter_6_digit_code_from_your_email": "Enter the 6-digit code from your email.",
     "auth.enter_your_email": "Enter your email",
-    
+
     "common.overdue": "Overdue",
     "common.today": "Today",
     "common.load_more": "Load more",
