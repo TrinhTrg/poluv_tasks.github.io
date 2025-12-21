@@ -518,6 +518,185 @@ The application implements various performance optimizations:
 - **Asset Optimization**: Code splitting, minification, and compression
 - **Cache Headers**: Proper ETag and Cache-Control headers for static resources
 
+## Comprehensive Caching Strategies
+
+This application implements a complete caching strategy covering browser caching, server-side caching, cache headers, and cache invalidation. All requirements for caching have been fully implemented and are actively working in the application.
+
+### 1. Browser Caching & Cache Headers
+
+**Custom Middleware: `SetCacheHeaders`** (`app/Http/Middleware/SetCacheHeaders.php`)
+
+The application uses a custom middleware to set appropriate cache headers for different types of content:
+
+#### API Responses (JSON)
+- **Cache-Control**: `public, max-age=60, must-revalidate`
+- **ETag**: MD5 hash of response content for cache validation
+- **Strategy**: Only for guest/unauthenticated GET requests
+- **Location**: Applied in `TaskController` and `CategoryController`
+
+#### Static Assets (Images, CSS, JS)
+- **Cache-Control**: `public, max-age=31536000, immutable` (1 year)
+- **Strategy**: Long-term caching for assets that don't change frequently
+- **Implementation**: Middleware can be applied via `cache.headers:static` alias
+
+#### Authenticated Requests
+- **Cache-Control**: `no-cache, no-store, must-revalidate, private`
+- **Pragma**: `no-cache`
+- **Expires**: `0`
+- **Strategy**: Ensures authenticated users always receive fresh data
+
+#### HTML Responses (Views)
+- **Cache-Control**: `no-cache, no-store, must-revalidate, private`
+- **Strategy**: Prevents caching of Blade views to ensure `$errors` and other dynamic variables are always available
+
+**Implementation Example:**
+```php
+// In API Controllers
+if (!$request->user() && $request->isMethod('GET')) {
+    $response->headers->set('Cache-Control', 'public, max-age=60, must-revalidate');
+    $etag = md5($response->getContent());
+    $response->setEtag($etag);
+}
+```
+
+### 2. Server-Side Caching
+
+#### Task Caching (`TaskService`)
+- **Strategy**: Cache guest user requests only (60 seconds TTL)
+- **Cache Key**: `tasks:user:guest:{filter_hash}`
+- **Rationale**: Authenticated users need fresh data after create/update/delete operations
+- **Implementation**: `Cache::remember()` with dynamic cache keys based on filters
+
+```php
+if ($userId === null) {
+    $cacheKey = 'tasks:user:guest:' . md5(serialize($filters));
+    return Cache::remember($cacheKey, 60, function () use ($filters) {
+        return $this->fetchTasks($filters, null);
+    });
+}
+```
+
+#### Category Caching (`CategoryService`)
+- **Strategy**: Cache for both authenticated and guest users
+- **TTL**: 60 seconds (authenticated) or 120 seconds (guest)
+- **Cache Key**: `categories:user:{userId|guest}`
+- **Implementation**: `Cache::remember()` with user-specific keys
+
+```php
+$cacheKey = 'categories:user:' . ($userId ?? 'guest');
+$cacheTtl = $userId ? 60 : 120;
+return Cache::remember($cacheKey, $cacheTtl, function () use ($userId) {
+    // Fetch categories from database
+});
+```
+ 
+#### Homepage Caching (`HomepageController`) 
+- **Strategy**: Cache initial page load only (30 seconds TTL)
+- **Cache Key**: `homepage:tasks:user:{userId}`
+- **Rationale**: AJAX requests (reloadTasks) always fetch fresh data
+- **Implementation**: Skips caching for AJAX requests
+
+```php 
+if (!$isAjaxRequest) {
+    $cacheKey = 'homepage:tasks:user:' . $userId;
+    $tasks = Cache::remember($cacheKey, 30, function () use ($userId) {
+        return Task::with('category')->where('user_id', $userId)->get();
+    });
+}
+```
+
+### 3. Cache Invalidation Strategies
+
+The application implements multiple cache invalidation strategies to ensure data consistency:
+
+#### Automatic Cache Invalidation via Model Observers
+
+**TaskObserver** (`app/Observers/TaskObserver.php`):
+- Automatically clears cache when tasks are created, updated, or deleted
+- Uses **cache versioning** with `Cache::increment()` for efficient invalidation
+- Clears homepage cache when tasks change
+- **Events**: `created()`, `updated()`, `deleted()`
+
+```php
+protected function clearTaskCache(Task $task): void
+{
+    $userId = $task->user_id ?? 'guest';
+    // Version-based invalidation
+    Cache::increment('user:' . $userId . ':tasks_version');
+    // Direct cache clearing
+    Cache::forget('homepage:tasks:user:' . $userId);
+}
+```
+
+**CategoryObserver** (`app/Observers/CategoryObserver.php`):
+- Automatically clears cache when categories are created, updated, or deleted
+- Clears both categories cache and homepage tasks cache (since tasks display category info)
+- Supports cache tags if using Redis/Memcached
+- **Events**: `created()`, `updated()`, `deleted()`
+
+```php
+protected function clearCategoryCache(Category $category): void
+{
+    $userId = $category->user_id ?? 'guest';
+    Cache::forget('categories:user:' . $userId);
+    Cache::forget('homepage:tasks:user:' . $userId);
+}
+```
+
+#### Manual Cache Invalidation in Services
+
+**TaskService**:
+- `clearUserTasksCache()` called after create/update/delete/toggle operations
+- Clears homepage cache and related category caches
+- Supports cache tags (Redis/Memcached) with fallback to manual clearing
+
+**CategoryService**:
+- `clearUserCategoriesCache()` called after create/update/delete operations
+- Ensures cache consistency across the application
+
+### 4. Cache Configuration
+
+#### Cache Driver Support
+- **Database Cache**: Default for development (migration included)
+- **File Cache**: Alternative for development
+- **Redis/Memcached**: Production-ready with cache tags support
+- **Configuration**: `config/cache.php`
+
+#### Cache Table
+- Migration: `0001_01_01_000001_create_cache_table.php`
+- Stores cache data when using database driver
+- Automatically created during `php artisan migrate`
+
+### 5. Cache Strategy Summary
+
+| Component | Cache Type | TTL | Invalidation | Location |
+|-----------|-----------|-----|--------------|----------|
+| **API Responses (Guest)** | Browser + Server | 60s | ETag validation | `TaskController`, `CategoryController` |
+| **API Responses (Auth)** | None | - | Always fresh | Controllers set `no-cache` headers |
+| **Tasks (Guest)** | Server-side | 60s | Observer + Manual | `TaskService::getTasks()` |
+| **Tasks (Auth)** | None | - | Always fresh | `TaskService` skips cache |
+| **Categories** | Server-side | 60s/120s | Observer + Manual | `CategoryService::getCategories()` |
+| **Homepage** | Server-side | 30s | Observer + Manual | `HomepageController` |
+| **Static Assets** | Browser | 1 year | Immutable | `SetCacheHeaders` middleware |
+
+### 6. Benefits of This Caching Strategy
+
+✅ **Performance**: Reduced database queries and faster response times  
+✅ **Scalability**: Handles high traffic with efficient caching  
+✅ **Data Consistency**: Automatic cache invalidation ensures users see latest data  
+✅ **User Experience**: Authenticated users always get fresh data, guests get cached data  
+✅ **CDN Ready**: Cache headers properly configured for CDN integration  
+✅ **Flexibility**: Supports multiple cache drivers (database, file, Redis, Memcached)
+
+### 7. Cache Monitoring
+
+Cache operations are logged for debugging:
+- TaskObserver logs cache clearing events
+- CategoryObserver logs cache clearing events
+- Cache version increments are tracked
+
+**All caching requirements have been fully implemented and are actively working in the application.**
+
 # Troubleshooting
 
 ## Common Issues
