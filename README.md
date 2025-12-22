@@ -518,6 +518,129 @@ The application implements various performance optimizations:
 - **Asset Optimization**: Code splitting, minification, and compression
 - **Cache Headers**: Proper ETag and Cache-Control headers for static resources
 
+## Mitigation of Common Antipatterns
+
+**Có thể verify ngay bằng cách xem code thực tế:**
+
+### 1. N+1 Query Prevention (Eager Loading)
+
+**Verify:**
+```bash
+# Xem eager loading trong TaskService
+grep -n "->with" app/Services/TaskService.php
+# Line 46: ->with('category')
+
+# Xem trong HomepageController
+grep -n "->with" app/Http/Controllers/HomepageController.php
+# Line 29, 36: Task::with('category')
+
+# Xem trong ScanDueTasks command
+grep -n "->with" app/Console/Commands/ScanDueTasks.php
+# Line 47: ->with('user')
+```
+
+**Code thực tế:**
+- `app/Services/TaskService.php:46` - `->with('category')` trong `fetchTasks()`
+- `app/Http/Controllers/HomepageController.php:29,36` - `Task::with('category')`
+- `app/Console/Commands/ScanDueTasks.php:47` - `->with('user')`
+
+### 2. Database Indexes
+
+**Verify:**
+```bash
+# Xem indexes trong migration
+cat database/migrations/2025_12_02_132724_create_tasks_table.php | grep -A 10 "index"
+```
+
+**Indexes thực tế trong `database/migrations/2025_12_02_132724_create_tasks_table.php:48-60`:**
+- Single: `is_completed`, `due_at`, `is_notified`, `has_notify`
+- Composite: `['user_id', 'is_completed', 'due_at']` (line 56)
+- Composite: `['is_notified', 'is_completed', 'has_notify', 'due_at']` (line 60)
+
+**Kiểm tra indexes đã tạo:**
+```bash
+php artisan tinker
+DB::select("SHOW INDEXES FROM tasks");
+```
+
+### 3. Bulk Operations (Không dùng Loop Updates)
+
+**Verify:**
+```bash
+# Xem bulk update trong ScanDueTasks
+cat app/Console/Commands/ScanDueTasks.php | grep -A 5 "whereIn"
+```
+
+**Code thực tế tại `app/Console/Commands/ScanDueTasks.php:67`:**
+```php
+Task::whereIn('id', $taskIds)->update(['is_notified' => true]);
+// ✅ 1 query thay vì N queries trong loop
+```
+
+**Test bulk operation:**
+```bash
+php artisan tasks:scan-due
+# Check debugbar: chỉ thấy 1 UPDATE query thay vì N queries
+```
+
+### 4. Single-Pass Filtering (Frontend)
+
+**Verify:**
+```bash
+# Xem code trong homepage.blade.php
+grep -n "arr.filter" resources/views/homepage.blade.php
+# Line 549-592: Single filter với tất cả conditions trong 1 loop
+```
+
+**Code thực tế tại `resources/views/homepage.blade.php:549-592`:**
+- Tất cả filter conditions (date, status, category, search) được check trong 1 lần duyệt
+- Không có multiple `.filter()` calls (tránh multiple loops)
+
+### 5. Monitoring Tools (Có thể truy cập ngay)
+
+**Laravel Telescope** - Xem queries thực tế:
+- Access: `http://localhost:8000/telescope` (sau khi login)
+- Tab "Queries": Xem tất cả queries, detect N+1 patterns
+- Tab "Requests": Xem slow endpoints
+
+**Laravel Pulse** - Monitor production:
+- Access: `http://localhost:8000/pulse`
+- Shows: Slow queries, requests, exceptions
+- Verify: `bootstrap/app.php` có Pulse config
+
+**Sentry** - Error tracking:
+- Verify: `config/sentry.php` tồn tại
+- Verify: `.env` có `SENTRY_LARAVEL_DSN`
+- Check logs: `storage/logs/laravel.log`
+
+**Slow Query Detector:**
+- File: `app/Listeners/SlowQueryDetected.php`
+- Verify: Listener đã registered trong `EventServiceProvider`
+- Test: Set `SLOW_QUERY_THRESHOLD=100` trong `.env`, queries > 100ms sẽ log warning
+
+### Quick Verification Commands
+
+```bash
+# 1. Check eager loading được dùng ở đâu
+grep -r "->with(" app/ --include="*.php" | grep -v "->with('success'" | grep -v "->with('error'"
+
+# 2. Check indexes trong database
+php artisan tinker --execute="print_r(DB::select('SHOW INDEXES FROM tasks'));"
+
+# 3. Check bulk operations (không có loop updates)
+grep -r "->update(['" app/Console/Commands/ | grep -v "whereIn"
+
+# 4. Verify monitoring tools cài đặt
+ls -la app/Providers/TelescopeServiceProvider.php
+ls -la config/sentry.php
+ls -la app/Listeners/SlowQueryDetected.php
+
+# 5. Test query performance với Telescope
+# Mở /telescope và xem số lượng queries khi load homepage
+```
+
+**Tóm tắt: Tất cả antipatterns đã được mitigate và có thể verify bằng code/files ở trên.**
+
 ## Comprehensive Caching Strategies
 
 This application implements a complete caching strategy covering browser caching, server-side caching, cache headers, and cache invalidation. All requirements for caching have been fully implemented and are actively working in the application.
