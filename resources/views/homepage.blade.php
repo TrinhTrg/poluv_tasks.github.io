@@ -789,7 +789,7 @@
                 window.renderTodaySchedule();
             }
             if (typeof window.renderCalendar === 'function') {
-                window.renderCalendar();
+                window.renderCalendar(); 
             }
             if (typeof window.renderTasks === 'function') {
                 window.renderTasks();
